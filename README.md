@@ -21,7 +21,7 @@ Then, run `parseEntries.cTAKES.Notes.getFileSizes.v3.py` to generate a file list
 # Run cTAKES
 cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. An example of single file processing is in the [run_ctakes.singleFile.sh](code/run_ctakes.singleFile.sh) bash script, and the parallel_example is in the script [parallel_example.sh](code/parallel_example.sh), which takes as input a list of files to process, and outputs this list to an designated output directory.
 
-First, run `setup_cTAKES.sh` to create cTAKES instances, and update the `parallel_example.sh` file to have the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the number of CPU cores available. 
+First, run `setup_cTAKES.sh` to create cTAKES instances, and update the `parallel_example.sh` file to contain the correct input, output, and the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the total number of CPU cores available. 
 
 Within either bash script, the runPiperFile.mod.sh is a modified script that points to the correct Java, a modified piper file, and a custom dictionary. Another option is to simply use the default dictionary.
 
