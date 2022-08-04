@@ -1,0 +1,1 @@
+./bin/runPiperFile.mod.sh -p resources/org/apache/ctakes/clinical/pipeline/DefaultFastPipeline.modOut2.piper -l resources/org/apache/ctakes/dictionary/lookup/fast/custom_snomed.xml -i inputDir/Churpek_NOTE_df_split0_tagged_2_splitA_smFileSize_4/ --xmiOut outputDir
