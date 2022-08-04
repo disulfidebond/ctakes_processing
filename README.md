@@ -19,7 +19,7 @@ First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. 
 Then, run `parseEntries.cTAKES.Notes.getFileSizes.v3.py` to generate a file list with file sizes, and run parseEntries.cTAKES.Notes.sortBySize.v3.py to sort the files by size.
 
 # Run cTAKES
-cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. To do this, run `setup_cTAKES.sh` to create cTAKES instances, and update `run_cTAKES.radiology.sh` to have the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the number of CPU cores available. Finally, `run_cTAKES.sh` to start cTAKES processing, and rerun `run_cTAKES.sh` as needed to process all size split files.
+cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. An example of single file processing is in the [run_ctakes.singleFile.sh](code/run_ctakes.singleFile.sh) bash script, and the parallel_example To do this, run `setup_cTAKES.sh` to create cTAKES instances, and update `run_cTAKES.radiology.sh` to have the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the number of CPU cores available. Finally, `run_cTAKES.sh` to start cTAKES processing, and rerun `run_cTAKES.sh` as needed to process all size split files.
 
 Within `run_cTAKES.sh`, the runPiperFile.mod.sh is a modified script that points to the correct Java, a modified piper file, and a custom dictionary. These files are available upon request.
 
