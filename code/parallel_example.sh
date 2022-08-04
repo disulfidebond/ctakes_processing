@@ -106,5 +106,5 @@ for f in "${ARRFILES[@]}" ; do
   fi
 done
 
-echo 'jobs done'
+echo 'monitor remaining jobs for completion'
 
