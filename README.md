@@ -19,9 +19,11 @@ First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. 
 Then, run `parseEntries.cTAKES.Notes.getFileSizes.v3.py` to generate a file list with file sizes, and run parseEntries.cTAKES.Notes.sortBySize.v3.py to sort the files by size.
 
 # Run cTAKES
-cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. An example of single file processing is in the [run_ctakes.singleFile.sh](code/run_ctakes.singleFile.sh) bash script, and the parallel_example To do this, run `setup_cTAKES.sh` to create cTAKES instances, and update `run_cTAKES.radiology.sh` to have the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the number of CPU cores available. Finally, `run_cTAKES.sh` to start cTAKES processing, and rerun `run_cTAKES.sh` as needed to process all size split files.
+cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. An example of single file processing is in the [run_ctakes.singleFile.sh](code/run_ctakes.singleFile.sh) bash script, and the parallel_example is in the script [parallel_example.sh](code/parallel_example.sh), which takes as input a list of files to process, and outputs this list to an designated output directory.
 
-Within `run_cTAKES.sh`, the runPiperFile.mod.sh is a modified script that points to the correct Java, a modified piper file, and a custom dictionary. These files are available upon request.
+First, run `setup_cTAKES.sh` to create cTAKES instances, and update the `parallel_example.sh` file to have the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the number of CPU cores available. 
+
+Within either bash script, the runPiperFile.mod.sh is a modified script that points to the correct Java, a modified piper file, and a custom dictionary. Another option is to simply use the default dictionary.
 
 It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
 
