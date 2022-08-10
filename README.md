@@ -22,6 +22,8 @@ Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKE
 
 ![](media/cTAKES_preprocessing.png)
 
+It is very important for the input cTAKES file(s) to have a header and values for the DocumentID, the Patient ID, the Encounter ID, the Document Type, and a Timestamp. Note that at a minimum, the file(s) must have a unique value for the Patient ID and the Encounter ID. See the postprocessing section for more information about this.
+
 # Run cTAKES
 cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. An example of single file processing is in the [run_ctakes.singleFile.sh](code/run_ctakes.singleFile.sh) bash script, and the parallel_example is in the script [parallel_example.sh](code/parallel_example.sh), which takes as input a list of files to process, and outputs this list to an designated output directory.
 
@@ -39,6 +41,24 @@ When completed, run `setup_for_flatfile_generation.py` to create a directory str
 
 ![](media/postprocessing_1.png)
 ![](media/postprocessing_2.png)
+
+Be sure to create a text config file with parameters for FileName, DocType (Document Type), PatID (Patient ID), EncID (Encounter ID), and TS (Timestamp). The config file is specified with the `--headerIdx` parameter, and points the flatfile generator to the corresponding comma separated field from the input text file. For example, if an input text file for cTAKES starts with the header and text:
+
+    DocID,PatientID,EncounterID,DocumentType,TimeStamp,Text
+    10001,P00001,E00001,PatientAssessment,01-02-2002,Assessment and Plan: Patient is a 34 y/o male with...
+
+Then you'd create a config file that looks like this (note that the Document ID field maps to index 7, not index 1, because the first header field is index 1):
+
+    FileName,7
+    DocType,10
+    PatID,8
+    EncID,9
+    TS,11
+
+Important: You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
+
+
+
 
 # Additional Notes
 * It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
