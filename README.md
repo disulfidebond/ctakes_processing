@@ -37,17 +37,12 @@ It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) scr
 ![](media/cTAKES_details.png)
 
 # Postprocessing
-When completed, run `setup_for_flatfile_generation.py` to create a directory structure for flatfile processing and to create the required input files for flatfile processing. This script will create three target work directories, which will be used to decompress the compressed XMI files while they are being processed, and the output directories will be used to Finally, run `generate_flatfiles.v2_2d.py` to generate flatfiles from the compressed XMI files. This script will convert the XMI output to `||`-delimited text flatfiles. The output flatfiles can be over 50 GB in size, so it may be advisable to compress these files or directories.
+First, create a text config file with parameters for FileName, DocType (Document Type), PatID (Patient ID), EncID (Encounter ID), and TS (Timestamp). The config file is specified with the `--headerIdx` parameter, and points the flatfile generator to the corresponding comma separated field from the input text file. For example, if an input text file for cTAKES starts with the header and text:
 
-![](media/postprocessing_1.png)
-![](media/postprocessing_2.png)
+    INDEX,DocID,PatientID,EncounterID,DocumentType,TimeStamp,Text
+    0,10001,P00001,E00001,PatientAssessment,01-02-2002,Assessment and Plan: Patient is a 34 y/o male with...
 
-Be sure to create a text config file with parameters for FileName, DocType (Document Type), PatID (Patient ID), EncID (Encounter ID), and TS (Timestamp). The config file is specified with the `--headerIdx` parameter, and points the flatfile generator to the corresponding comma separated field from the input text file. For example, if an input text file for cTAKES starts with the header and text:
-
-    DocID,PatientID,EncounterID,DocumentType,TimeStamp,Text
-    10001,P00001,E00001,PatientAssessment,01-02-2002,Assessment and Plan: Patient is a 34 y/o male with...
-
-Then you'd create a config file that looks like this (note that the Document ID field maps to index 7, not index 1, because the first header field is index 1):
+Then you'd create a config file that looks like this (note that the Document ID field maps to index 7, not index 0, because the first header field is index 0):
 
     FileName,7
     DocType,10
@@ -55,7 +50,15 @@ Then you'd create a config file that looks like this (note that the Document ID 
     EncID,9
     TS,11
 
-Important: You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
+
+*Important:* You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
+
+*Important:* Always include a dummy INDEX column or the script will not parse correctly!
+
+When completed, run [setup_for_flatfile_generation.py](code/setup_for_flatfile_generation.py) to create a directory structure for flatfile processing and to create the required input files for flatfile processing. This script will create three target work directories, which will be used to decompress the compressed XMI files while they are being processed, and the output directories will be used to Finally, run [generate_flatfiles.py](code/generate_flatfiles.py) to generate flatfiles from the compressed XMI files. This script will convert the XMI output to `||`-delimited text flatfiles. The output flatfiles can be over 50 GB in size, so it may be advisable to compress these files or directories.
+
+![](media/postprocessing_1.png)
+![](media/postprocessing_2.png)
 
 
 
