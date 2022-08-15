@@ -50,18 +50,16 @@ Then you'd create a config file that looks like this (note that the Document ID 
     EncID,9
     TS,11
 
-
-*Important:* You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
-
-*Important:* Always include a dummy INDEX column or the script will not parse correctly!
-
 When completed, run [setup_for_flatfile_generation.py](code/setup_for_flatfile_generation.py) to create a directory structure for flatfile processing and to create the required input files for flatfile processing. This script will create three target work directories, which will be used to decompress the compressed XMI files while they are being processed, and the output directories will be used to Finally, run [generate_flatfiles.py](code/generate_flatfiles.py) to generate flatfiles from the compressed XMI files. This script will convert the XMI output to `||`-delimited text flatfiles. The output flatfiles can be over 50 GB in size, so it may be advisable to compress these files or directories.
 
 ![](media/postprocessing_1.png)
 ![](media/postprocessing_2.png)
 
-
-
+## Important Notes
+* You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
+* Always include a dummy INDEX column or the script will not parse correctly!
+  * The XML character for newline `\r` is `&#13` and for newline `\n` is `&#10`, meaning the purpose of the dummy INDEX column is to avoid having to parse out newline and `\r` characters from the fields you need.
+* You can use the bash script `simple_xmi_viewer` in Bash to make the XMI output human readable and allow you to determine which fields to use.
 
 # Additional Notes
 * It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
