@@ -1,0 +1,12 @@
+INFILE=$1
+
+if [[ -z $INFILE ]] ; then
+  echo 'please enter an input filename'
+  exit 1
+fi
+
+if [[ $INFILE = *.gz ]] ; then
+  zcat $INFILE | sed 's/></>\n</g' | less
+else
+  cat $INFILE | sed 's/></>\n</g' | less
+fi
