@@ -118,37 +118,14 @@ def dictFromXMLtags(f, customDict=None):
         objText_EncID = ''
         objText_TS = ''
         try:
-          # custom modification for radiology notes
-          '''
-          objText_parsed = parsedList[idx_FileName]
-          objText_parsed1 = objText_parsed.split('\n')
-          objText_parsed1 = str(objText_parsed1[1])
-          objText_FileName = str(objText_parsed1) + '.csv'
-          objText_DocID = objText_parsed1
-          objText_PatID = objText_parsed1
-          objText_EncID = objText_parsed1
-          objText_tmp = ' '.join(parsedList[9:11])
-          objText_DocType = str(objText_tmp)
-          '''
           objText_DocType = str(parsedList[idx_DocType])
-          # custom modification 03312022
           objText_FileName = str(parsedList[idx_FileName])
-          tmpStr = objText_FileName.split('\n')
-          tmpStr = tmpStr[1]
-          objText_FileName + '.csv'
-          objText_DocID = tmpStr
-          # objText_FileName = str(parsedList[idx_FileName]) + '.csv' 
-          # objText_DocID = str(parsedList[idx_FileName])
-          # end custom modification 03312022
+          objText_FileName = objText_FileName + '.csv'
+          objText_DocID = objText_FileName
           objText_PatID = str(parsedList[idx_PatID])
           objText_EncID = str(parsedList[idx_EncID])
           objText_TS = str(parsedList[idx_TS])
-          # end custom modification code
         except IndexError:
-          # debugging
-          print(customDict)
-          print(parsedList)
-          sys.exit()
           objText_FileName = 'PARSER_ERROR'
           objText_DocID = 'PARSER_ERROR'
           objText_DocType = 'PARSER_ERROR'
@@ -227,12 +204,10 @@ def createNameTuple(df_XMI, workDirPath, useCustomDict=False, customDict=None):
     k_list_preferred = d[1]
     k_list_cd = d[2]
     v = d[3][0]
-    # custom modification for radiology notes
     tmp_docID = k.split('.')
     tmp_docID = '.'.join(tmp_docID[0:2])
     tmp_docID = str(tmp_docID)
     v[0] = tmp_docID
-    # end custom modification code
     v = tuple(v)
     for idx in range(len(k_list)):
       itm = k_list[idx]
@@ -257,9 +232,6 @@ def writeOutputFile(outputFileName, nameTuple_removedDups, skip_header=True):
       try:
         xmi_cui = itm[3]
       except IndexError:
-        # print('IndexError at')
-        # print(itm)
-        # break
         continue
       xmi_pref = itm[4]
       xmi_pol = ''
