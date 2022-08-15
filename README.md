@@ -55,13 +55,13 @@ When completed, run [setup_for_flatfile_generation.py](code/setup_for_flatfile_g
 ![](media/postprocessing_1.png)
 ![](media/postprocessing_2.png)
 
-## Important Notes
+## Important Notes for Postprocessing
 * You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
 * Always include a dummy INDEX column or the script will not parse correctly!
   * The XML character for newline `\r` is `&#13` and for newline `\n` is `&#10`, meaning the purpose of the dummy INDEX column is to avoid having to parse out newline and `\r` characters from the fields you need.
-* You can use the bash script `simple_xmi_viewer` in Bash to make the XMI output human readable and allow you to determine which fields to use.
+* You can use the bash script [simple_xmi_viewer](code/simple_xmi_viewer) in Bash to make the XMI output human readable and allow you to determine which fields to use in the config file.
 
-# Additional Notes
+# Additional General Notes
 * It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
 * Following the preprocessing steps listed above, the medical notes were ready for the processing and analysis steps in the cTAKES overview. There is an exponential increase in processing time versus file size, so it is very important to split input files by size.
 * The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
