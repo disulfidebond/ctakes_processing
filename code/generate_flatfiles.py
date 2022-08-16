@@ -306,7 +306,6 @@ def main(fNames, workDirPath, outputFileName, headerIdxList):
     # create tuple of XMI and CSV, and customDict 
     nameTuple = createNameTuple(df_XMI, workDirPath, useCustomDict=True, customDict=customDict)
     print("processed " + str(x))
-    nameTuple.sort()
     if startBool:
       writeOutputFile(outputFileName, nameTuple, skip_header=False)
     else:
