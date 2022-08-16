@@ -13,7 +13,8 @@ There are several versions of cTAKES available. This workflow uses cTAKES 4.0.0.
 In addition to cTAKES, you must have Java installed, and python 3.6+ installed. Although the documentation stated cTAKES is compatible with 
 Java 1.8+, we found Java 15 worked the best.
 
-The zipped file [cTAKES_workflow_example.zip](code/cTAKES_workflow_example.zip) is a worked and tested example from start to finish using example notes files.
+# Worked Example
+The zipped file [cTAKES_workflow_example.zip](code/cTAKES_workflow_example.zip) is a worked and tested example from start to finish using example notes files, and a [PDF](media/cTAKES_overview_presentation.pdf) describes the steps required to complete the workflow.
 
 # Preprocessing
 First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
