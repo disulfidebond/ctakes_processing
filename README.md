@@ -16,6 +16,8 @@ Java 1.8+, we found Java 15 worked the best.
 # Worked Example
 The zipped file [cTAKES_workflow_example.zip](code/cTAKES_workflow_example.zip) is a worked and tested example from start to finish using example notes files, and a [PDF](media/cTAKES_overview_presentation.pdf) describes the steps required to complete the workflow.
 
+Additionally, there is a [helper file](code/index_helper.py) that can be used to show the indices for the CSV fields. However, remember that you need to add the length of the header to the index values.
+
 # Preprocessing
 First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
 
