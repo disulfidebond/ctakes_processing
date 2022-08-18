@@ -22,16 +22,26 @@ def dictFromXMLtags(f, customDict=None):
             x = objText.split('\n')
             return objText.split('\n')
 
-def formatOutput(l, verboseBool=False):
+def formatOutput(l, verboseBool=False, countBool=True):
+    idxCt = len(l)
     if verboseBool:
         print('Index,HeaderField,ExampleText')
+    elif not countBool:
+       print('Index,HeaderField')
     else:
-        print('HeaderField,Index')
+        print('HeaderField,Index,AdjustedIndex')
     for idx,val in enumerate(l):
         s = str(val[0]) + ',' + str(idx)
         if verboseBool:
             s = str(idx) + ',' + str(val[0]) + ',' + str(val[1])
-        print(s)
+            print(s)
+        elif not countBool:
+            print(s)
+        else:
+            idxCtString = idx + idxCt
+            idxCtString = str(idxCtString)
+            s = s + ',' + idxCtString
+            print(s)
 
 # argparse
 parser = argparse.ArgumentParser()
@@ -50,12 +60,16 @@ dList = parsedList[1].split(',')
 tList = []
 print(cList)
 stopCt = len(cList)
+countBool = True
 if args.textColInt >=0:
     stopCt = args.textColInt
+    countBool = False
 for x in range(stopCt):
     tList.append((cList[x], dList[x]))
 
 if args.exampleText == True:
     formatOutput(tList, verboseBool=True)
+elif not countBool:
+    formatOutput(tList, countBool=False)
 else:
     formatOutput(tList)
