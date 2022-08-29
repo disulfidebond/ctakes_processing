@@ -43,7 +43,7 @@ if checkGZ:
   print('Please check the directory before running this script. Exiting now...')
   sys.exit()
 
-# check to make sure dirLimit is 1, 2, or 3
+# check to make sure dirLimit is within range
 if int(args.dirLimit) > 0 and int(args.dirLimit) <= 20:
   print('ready to run flatfile generation with ' + str(args.dirLimit) + ' simultaneous instances')
 else:
@@ -127,16 +127,20 @@ else:
   limitRange = int(int(fileCountInRunDir)/int(args.dirLimit))
   ct = 1
   writeList = []
+  stopCt = -1
   for i in range(0, fileCountInRunDir):
-    if i == limitRange:
+    stopCt += 1
+    if stopCt == limitRange:
+      print(limitRange)
       runFileName = runFileLabel + '.' + str(ct) + '.txt'
       with open(runFileName, 'w') as fWrite:
         for w in writeList:
           fWrite.write(str(w) + '\n')
       ct += 1
-      limitRange = limitRange*2
+      # limitRange = limitRange*2
       writeList = []
       writeList.append(filesInRunDir[i])
+      stopCt = 0
     else:
       writeList.append(filesInRunDir[i])
     runFileName = runFileLabel + '.' + str(ct) + '.txt'
@@ -145,3 +149,4 @@ else:
       fWrite.write(str(w) + '\n')
   print('created runfiles for flatfile generator with prefix ' + str(runFileLabel))
 print('Setup of work directories completed')
+
