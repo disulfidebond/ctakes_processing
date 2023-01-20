@@ -79,7 +79,11 @@ def dictFromXMLtags(f, customDict=None):
     s2 = child.attrib
     m = re.search('Umls', s1)
     if m:
-      prefText = s2['preferredText']
+      prefText = ''
+      try:
+        prefText = s2['preferredText']
+      except KeyError:
+        prefText = ''
       if not prefText:
         prefText = '_'
       cui_list.append(s2['cui'])
