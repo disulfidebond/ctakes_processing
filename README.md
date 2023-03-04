@@ -1,5 +1,6 @@
 # README
-Requirements:
+
+Requirements for running cTAKES, note that CUI extraction (see below) has different requirements that depend on how it is run:
 
 - cTAKES 4.0.0.1 installed
 - custom NLM Library installed 
@@ -39,33 +40,109 @@ It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) scr
 ![](media/cTAKES_running.png)
 ![](media/cTAKES_details.png)
 
-# Postprocessing
-First, create a text config file with parameters for FileName, DocType (Document Type), PatID (Patient ID), EncID (Encounter ID), and TS (Timestamp). The config file is specified with the `--headerIdx` parameter, and points the flatfile generator to the corresponding comma separated field from the input text file. For example, if an input text file for cTAKES starts with the header and text:
-
-    INDEX,DocID,PatientID,EncounterID,DocumentType,TimeStamp,Text
-    0,10001,P00001,E00001,PatientAssessment,01-02-2002,Assessment and Plan: Patient is a 34 y/o male with...
-
-Then you'd create a config file that looks like this (note that the Document ID field maps to index 7, not index 0, because the first header field is index 0):
-
-    FileName,7
-    DocType,10
-    PatID,8
-    EncID,9
-    TS,11
-
-When completed, run [setup_for_flatfile_generation.py](code/setup_for_flatfile_generation.py) to create a directory structure for flatfile processing and to create the required input files for flatfile processing. This script will create three target work directories, which will be used to decompress the compressed XMI files while they are being processed, and the output directories will be used to Finally, run [generate_flatfiles.py](code/generate_flatfiles.py) to generate flatfiles from the compressed XMI files. This script will convert the XMI output to `||`-delimited text flatfiles. The output flatfiles can be over 50 GB in size, so it may be advisable to compress these files or directories.
-
-![](media/postprocessing_1.png)
-![](media/postprocessing_2.png)
-
-## Important Notes for Postprocessing
-* You must use the exact identifier names listed above (e.g. `PatID`) in your config file!
-* Always include a dummy INDEX column or the script will not parse correctly!
-  * The XML character for newline `\r` is `&#13` and for newline `\n` is `&#10`, meaning the purpose of the dummy INDEX column is to avoid having to parse out newline and `\r` characters from the fields you need.
-* You can use the bash script [simple_xmi_viewer](code/simple_xmi_viewer) in Bash to make the XMI output human readable and allow you to determine which fields to use in the config file.
-
-# Additional General Notes
+## Additional General Notes
 * It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
 * Following the preprocessing steps listed above, the medical notes were ready for the processing and analysis steps in the cTAKES overview. There is an exponential increase in processing time versus file size, so it is very important to split input files by size.
 * The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
-* You may need to modify the `dictFromXMLTags()` function, and the `customDictKeys` hash in the main function of the `generate_flatfiles.v2_2d.py` python script.
+
+# Postprocessing Steps
+There are three components to postprocessing, and generating an output flatfile with the format:
+
+    FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||DomainCode||Polarity
+
+The first two steps (CUI extraction and Data Extraction) can be run in any order, but the output from both are required to run the third (final) step, which generates a text `||`-delimited output flat file.
+
+## Step 1: CUI Extraction
+This step uses java to extract the CUIs within the cTAKES XMI output files, while maintaining the correct ordering and CUI counts. The protocol has been extensively tested, but please note that the steps must be followed **exactly**. 
+
+There are two ways to run this step: using Docker, or via manual installation.
+
+### Docker Image
+First, download the Docker image from Dockerhub:
+
+    docker pull datacram/c7cuiextractor
+
+Then, create a docker container with an attached volume to copy files to and from the Docker container 
+
+    # assumes you want to create a docker container 
+    # with the directory data_vol as the attached volume
+    # that has an interactive shell
+    # NOTE: the attached volume *must* be mounted at /dataspace or the workflow will not function!
+    docker run -it -v data_vol:/dataspace datacram/c7cuiextractor
+
+Next, decompress and copy the XMI files, and the bash script [runCUIextractor.sh](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/runCUIextractor.sh) to the `data_vol` folder in the example above. There are several ways to do this, below is one example:
+
+    # run from Terminal on host
+    for i in xmiDir/*.gz ; do gunzip $i ; DONE
+    cp xmiDir/*.xmi datavol/inputDir/
+    # run from docker container, XMI files must be copied to `/workspace/inputDir` folder
+    cp inputDir/* /workspace/inputDir/
+
+Finally, run the bash script from the Docker Container to process the files, where `INPUT_DIRECTORY` and `OUTPUT_DIRECTORY` are the input directory you copied with the cTAKES XMI files, 
+
+    # from docker container
+    ./runCUIextractor.sh INPUT_DIRECTORY OUTPUT_DIRECTORY
+
+When complete, the CUI output files will be in the `/workspace/outputDir` folder.
+    
+### Manual Installation
+A few notes before beginning are:
+* The installation instructions and workflow have been fully tested on Centos7 Linux, but they should work on all Linux distros.
+* The installation instructions must be followed **exactly**, especially with regards to software versions. For example, we found that the cTAKES workflow tended to work best with Java 15, but the CUI extraction workflow must use Java 1.8 (with the latest updates). 
+* The installation and setup will take about 2 hours, but only needs to be performed once. 
+* The resulting installation directory can then be copied to other locations, however, `maven` will still look to the original user folder when running, meaning if you copy the directory to a run node and the ~/.m2 directory changes or cannot be found, the workflow will not function correctly.
+
+#### Setup Steps
+1. Download and install Java 1.8, then ensure that this is the default Java version.
+2. Download and install maven, and ensure that maven is pointed to Java 1.8
+3. Download cTAKES using SVN via `svn co https://svn.apache.org/repos/asf/ctakes/trunk/` (do not use the GitHub version!)
+4. Change to the `trunk` directory, then run `mvn clean compile` (this will take up to an hour).
+5. In the `trunk` directory, run `mvn install -Dmaven.test.skip=true` (this will take about 45 minutes).
+6. Change to the parent directory of `trunk`, then download the CUI extractor java code via `git clone https://github.com/disulfidebond/ctakes-misc.git`
+7. Change to the `ctakes-misc` directory, then run `mvn clean compile` (this will take about 15 minutes).
+8. Create a directory named `inputDir` in the parent directory of `ctakes-misc`, then create a directory named `outputDir` in the parent directory of `ctakes-misc` (See Overview Figure below).
+9. From the `ctakes-misc` directory, use the following command to extract CUIs, where `/path/to/inputDir` is the full (absolute) path to the input directory created in Step 8, and `/path/to/outputDir` is the full (absolute) path to the output directory created in Step 8. Be sure to include trailing slash `/` characters.
+
+        mvn exec:java -Dexec.mainClass="org.apache.ctakes.consumers.ExtractCuiSequences" -Dexec.args="--xmi-dir /path/to/inputDir/ --output-dir /path/to/outputDir/"
+
+#### Overview Figure
+![Overview Figure](media/Overview_Figure.png)
+
+
+### Additional Notes and Comments for CUI extraction
+* Be sure to add `mvn` to your $PATH if doing the Manual Installation
+* The output will be a newline-delimited text file of CUIs with the same root file name as the input file and ending with `.extraxtedCUIs.txt`
+* Do not set the `JAVA_HOME` or `CTAKES_HOME` variables. If these have been set to any values, unset them when installing or running the CUI extractor.
+* It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
+
+FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||DomainCode||Polarity
+
+## Step 2: Data Extraction
+This workflow takes as input either a directory of cTAKES output XMI files, or the input medical notes files. It uses the python script [note_data_extractor.py](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/note_data_extractor.py) to extract the Document ID, Note Type, Patient ID, Encounter ID, and Note Timestamp. The required input arguments are:
+
+* parseMode -> enter either `csv` for a medical note file, or `xmi` for an output cTAKES file. (Required)
+* headerFile -> this must be a text file with the 0-based column indexes for the data columns you wish to extract. It must have values for `FileName`, `DocType`, `PatID`, `EncID`, and `TS`, which are the file name, document type, patient identifier, encounter identifier, and time stamp, respectively. An example is [here](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/example_header_file.txt), see also the Important Notes for Data Extraction subsection below. (Required)
+* debugMode -> set this to `verbose` to provide verbose output on file processing, and to disable deleting the temporary work directory at the conclusion of the workflow. The default is `quiet`.
+* exitOnError -> if set to True, then the workflow will exit if it encounters a parsing error. The default is False.
+* forceImport -> bypasses file checking and only attempts to import files using the provided method. The default is False.
+* inputDirectory -> the input directory name where either **gz-compressed** XMI files are located, or uncompressed medical note files are located. (Required)
+* outputFile -> the name for the output CSV file. (Required)
+* previewMode -> if set to 'True', then the workflow will parse the first note file, print the output to the screen, and then exit without creating an output file. The default is False.
+
+### Important Notes for Data Extraction
+* The script will accept either XMI or a medical note (CSV) file, but you can only provide one set of headers. Meaning, the header indexes for both the medical note files and XMI files must be the same, or you'll need to run the data extractor multiple times.
+* The script will automatically check the provided input files to see if they can be parsed as an XMI file, and if they can be imported as a CSV file into pandas. Although not advised, you can disable this functionality via `forceImport='True'` which will then bypass checking the files.
+* All of the required fields for the headerFile must be provided. If one needs to be skipped (for example, if EncounterID == PatientID), then you enter "-1" for that field, which is shown in the [example](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/example_header_file.txt).
+* The workflow will not check to see if a file name with the same name as the provided outputFile exists before overwriting it.
+
+## Step 3: Generate Final Output Flatfile
+This python script takes as input the CSV file from Data Extraction, and the output directory from CUI extraction. The usage is fairly straightforward:
+
+* inputCSV -> the CSV file from Data Extraction
+* inputDir -> the output directory of extracted CUIs
+* outputFileName -> the output file name (the script will not check to see if a file with the same name exists before overwriting it!)
+
+A few important caveats are:
+1. All root filenames must be unique, e.g. if the file `E00001.txt` exists, then if the file `E00001.txt.xmi.gz` exists, it must be for the same medical note.
+2. The Document ID will be the same for both the Data Extractor and CUI Extractor, e.g. the medical note with document identifier E00001.txt will have the XMI output file E00001.txt.xmi.gz, meaning the Document ID in both outputs will be E00001
+2. Medical note filenames must have the format `Identifier.txt`, and additional periods cannot be used, but other characters can be used, e.g. `E00001_1.txt` is valid, but `E00001.1.txt` will cause errors.
