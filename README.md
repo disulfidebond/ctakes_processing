@@ -48,7 +48,7 @@ It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) scr
 # Postprocessing Steps
 There are three components to postprocessing, and generating an output flatfile with the format:
 
-    FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||DomainCode||Polarity
+    FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||OffsetStart||OffsetStop||DomainCode||Polarity
 
 The first two steps (CUI extraction and Data Extraction) can be run in any order, but the output from both are required to run the third (final) step, which generates a text `||`-delimited output flat file.
 
@@ -113,8 +113,6 @@ A few notes before beginning are:
 * Be sure to add `mvn` to your $PATH if doing the Manual Installation
 * The output will be a newline-delimited text file of CUIs with the same root file name as the input file and ending with `.cuis.txt`
 * It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
-
-FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||DomainCode||Polarity
 
 ## Step 2: Data Extraction
 This workflow takes as input either a directory of cTAKES output XMI files, or the input medical notes files. It uses the python script [note_data_extractor.py](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/note_data_extractor.py) to extract the Document ID, Note Type, Patient ID, Encounter ID, and Note Timestamp. The required input arguments are:
