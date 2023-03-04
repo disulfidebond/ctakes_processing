@@ -94,14 +94,14 @@ A few notes before beginning are:
 
 #### Setup Steps
 1. Download and install Java 1.8, then ensure that this is the default Java version.
-2. Download and install maven, and ensure that maven is pointed to Java 1.8
-3. Download cTAKES using SVN via `svn co https://svn.apache.org/repos/asf/ctakes/trunk/` (do not use the GitHub version!)
+2. Download and install [maven](https://maven.apache.org/install.html), and ensure that maven is pointed to Java 1.8
+3. Download cTAKES using SVN via `svn co https://svn.apache.org/repos/asf/ctakes/trunk/` (do not use the GitHub version!).
 4. Change to the `trunk` directory, then run `mvn clean compile` (this will take up to an hour).
 5. In the `trunk` directory, run `mvn install -Dmaven.test.skip=true` (this will take about 45 minutes).
 6. Change to the parent directory of `trunk`, then download the CUI extractor java code via `git clone https://github.com/disulfidebond/ctakes-misc.git`
 7. Change to the `ctakes-misc` directory, then run `mvn clean compile` (this will take about 15 minutes).
 8. Create a directory named `inputDir` in the parent directory of `ctakes-misc`, then create a directory named `outputDir` in the parent directory of `ctakes-misc` (See Overview Figure below).
-9. From the `ctakes-misc` directory, use the following command to extract CUIs, where `/path/to/inputDir` is the full (absolute) path to the input directory created in Step 8, and `/path/to/outputDir` is the full (absolute) path to the output directory created in Step 8. Be sure to include trailing slash `/` characters.
+9. **After** completing step 8, unset `$JAVA_HOME` and `$CTAKES_HOME` variables. Then, from the `ctakes-misc` directory, use the following command to extract CUIs, where `/path/to/inputDir` is the full (absolute) path to the input directory created in Step 8, and `/path/to/outputDir` is the full (absolute) path to the output directory created in Step 8. Be sure to include trailing slash `/` characters.
 
         mvn exec:java -Dexec.mainClass="org.apache.ctakes.consumers.ExtractCuiSequences" -Dexec.args="--xmi-dir /path/to/inputDir/ --output-dir /path/to/outputDir/"
 
@@ -111,8 +111,7 @@ A few notes before beginning are:
 
 ### Additional Notes and Comments for CUI extraction
 * Be sure to add `mvn` to your $PATH if doing the Manual Installation
-* The output will be a newline-delimited text file of CUIs with the same root file name as the input file and ending with `.extraxtedCUIs.txt`
-* Do not set the `JAVA_HOME` or `CTAKES_HOME` variables. If these have been set to any values, unset them when installing or running the CUI extractor.
+* The output will be a newline-delimited text file of CUIs with the same root file name as the input file and ending with `.cuis.txt`
 * It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
 
 FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||DomainCode||Polarity
