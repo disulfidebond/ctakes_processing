@@ -135,7 +135,7 @@ This workflow takes as input either a directory of cTAKES output XMI files, or t
 * The workflow will not check to see if a file name with the same name as the provided outputFile exists before overwriting it.
 
 ## Step 3: Generate Final Output Flatfile
-This python script takes as input the CSV file from Data Extraction, and the output directory from CUI extraction. The usage is fairly straightforward:
+The python script [generate_flatfile](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/generate_flatfile.py) takes as input the CSV file from Data Extraction, and the output directory from CUI extraction. The usage is fairly straightforward:
 
 * inputCSV -> the CSV file from Data Extraction
 * inputDir -> the output directory of extracted CUIs
