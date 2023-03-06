@@ -59,7 +59,7 @@ There are two ways to run this step: using Docker, or via manual installation. B
 
 ### Docker Image
 
-**IMPORTANT:** The underlying OS (Centos7) in the docker image [is official EOL](https://www.centos.org/centos-linux-eol/). This OS has known security vulnerabilities, and it is extremely important to run the docker container in a controlled development environment.
+**IMPORTANT:** The underlying OS (Centos7) in the docker image [is official EOL](https://www.centos.org/centos-linux-eol/). This OS version has known and unpatched security vulnerabilities, so it is extremely important to run the docker container in a controlled development environment.
 
 
 First, download the Docker image from Dockerhub.
