@@ -58,9 +58,7 @@ This step uses java to extract the CUIs within the cTAKES XMI output files, whil
 There are two ways to run this step: using Docker, or via manual installation.
 
 ### Docker Image
-First, download the Docker image from Dockerhub:
-
-    docker pull datacram/c7cuiextractor
+First, download the Docker image from Dockerhub.
 
 Then, create a docker container with an attached volume to copy files to and from the Docker container 
 
