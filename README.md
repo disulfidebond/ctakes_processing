@@ -58,7 +58,13 @@ This step uses java to extract the CUIs within the cTAKES XMI output files, whil
 There are two ways to run this step: using Docker, or via manual installation.
 
 ### Docker Image
+
+**IMPORTANT:** The underlying OS (Centos7) in the docker image [is official EOL](https://www.centos.org/centos-linux-eol/), as is Java8. Both have known security vulnerabilities, and it is extremely important to run the docker container in a controlled development environment.
+
+
 First, download the Docker image from Dockerhub.
+
+    docker pull datacram/c7cuiextractor:v1-1
 
 Then, create a docker container with an attached volume to copy files to and from the Docker container 
 
