@@ -95,6 +95,7 @@ A few notes before beginning are:
 * The installation instructions must be followed **exactly**, especially with regards to software versions. For example, we found that the cTAKES workflow tended to work best with Java 15, but the CUI extraction workflow must use Java 1.8 (with the latest updates). 
 * The installation and setup will take about 2 hours, but only needs to be performed once. 
 * The resulting installation directory can then be copied to other locations, however, `maven` will still look to the original user folder when running, meaning if you copy the directory to a run node and the ~/.m2 directory changes or cannot be found, the workflow will not function correctly.
+* Most versions of the [Java 8 JDK are EOL](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html), and will not have security or other updates. It is **extremely important** to run the Java portion of the workflow in a controlled development environment.
 
 #### Setup Steps
 1. Download and install Java 1.8, then ensure that this is the default Java version.
