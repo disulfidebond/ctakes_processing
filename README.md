@@ -55,16 +55,16 @@ The first two steps (CUI extraction and Data Extraction) can be run in any order
 ## Step 1: CUI Extraction
 This step uses java to extract the CUIs within the cTAKES XMI output files, while maintaining the correct ordering and CUI counts. The protocol has been extensively tested, but please note that the steps must be followed **exactly**. 
 
-There are two ways to run this step: using Docker, or via manual installation.
+There are two ways to run this step: using Docker, or via manual installation. Both require the most recent Java to run (tested with Java 19).
 
 ### Docker Image
 
-**IMPORTANT:** The underlying OS (Centos7) in the docker image [is official EOL](https://www.centos.org/centos-linux-eol/), as is Java8. Both have known security vulnerabilities, and it is extremely important to run the docker container in a controlled development environment.
+**IMPORTANT:** The underlying OS (Centos7) in the docker image [is official EOL](https://www.centos.org/centos-linux-eol/). This OS has known security vulnerabilities, and it is extremely important to run the docker container in a controlled development environment.
 
 
 First, download the Docker image from Dockerhub.
 
-    docker pull datacram/c7cuiextractor:v1-1
+    docker pull datacram/c7cuiextractor:v1-2
 
 Then, create a docker container with an attached volume to copy files to and from the Docker container 
 
@@ -72,7 +72,7 @@ Then, create a docker container with an attached volume to copy files to and fro
     # with the directory data_vol as the attached volume
     # that has an interactive shell
     # NOTE: the attached volume *must* be mounted at /dataspace or the workflow will not function!
-    docker run -it -v data_vol:/dataspace datacram/c7cuiextractor
+    docker run -it -v data_vol:/dataspace datacram/c7cuiextractor:v1-2
 
 Next, decompress and copy the XMI files, and the bash script [runCUIextractor.sh](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/runCUIextractor.sh) to the `data_vol` folder in the example above. There are several ways to do this, below is one example:
 
@@ -92,8 +92,8 @@ When complete, the CUI output files will be in the `/workspace/outputDir` folder
 ### Manual Installation
 A few notes before beginning are:
 * The installation instructions and workflow have been fully tested on Centos7 Linux, but they should work on all Linux distros.
-* The installation instructions must be followed **exactly**, especially with regards to software versions. For example, we found that the cTAKES workflow tended to work best with Java 15, but the CUI extraction workflow must use Java 1.8 (with the latest updates). 
-* The installation and setup will take about 2 hours, but only needs to be performed once. 
+* The installation instructions must be followed **exactly**, especially with regards to software versions. For example, we found that the cTAKES workflow tended to work best with Java 15, compiling the base cTAKES package required Java 1.8, but the CUI extraction portion of the workflow should use the latest Java (tested with Java 19). 
+* The installation and setup may take up to 2 hours, but only needs to be performed once. 
 * The resulting installation directory can then be copied to other locations, however, `maven` will still look to the original user folder when running, meaning if you copy the directory to a run node and the ~/.m2 directory changes or cannot be found, the workflow will not function correctly.
 * Most versions of the [Java 8 JDK are EOL](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html), and will not have security or other updates. It is **extremely important** to run the Java portion of the workflow in a controlled development environment.
 
@@ -102,9 +102,10 @@ A few notes before beginning are:
 2. Download and install [maven](https://maven.apache.org/install.html), and ensure that maven is pointed to Java 1.8
 3. Download cTAKES using SVN via `svn co https://svn.apache.org/repos/asf/ctakes/trunk/` (do not use the GitHub version!).
 4. Change to the `trunk` directory, then run `mvn clean compile` (this will take up to an hour).
-5. In the `trunk` directory, run `mvn install -Dmaven.test.skip=true` (this will take about 45 minutes).
+5. In the `trunk` directory, run `mvn install -Dmaven.test.skip=true` (this will take up to 45 minutes).
 6. Change to the parent directory of `trunk`, then download the CUI extractor java code via `git clone https://github.com/disulfidebond/ctakes-misc.git`
-7. Change to the `ctakes-misc` directory, then run `mvn clean compile` (this will take about 15 minutes).
+7. If not done so already, [download and install Java 19](https://www.oracle.com/java/technologies/downloads/#java19). Ensure that maven is now pointed to this Java version.
+7. Change to the `ctakes-misc` directory, then run `mvn clean compile` (this will take up to 15 minutes).
 8. Create a directory named `inputDir` in the parent directory of `ctakes-misc`, then create a directory named `outputDir` in the parent directory of `ctakes-misc` (See Overview Figure below).
 9. **After** completing step 8, unset `$JAVA_HOME` and `$CTAKES_HOME` variables. Then, from the `ctakes-misc` directory, use the following command to extract CUIs, where `/path/to/inputDir` is the full (absolute) path to the input directory created in Step 8, and `/path/to/outputDir` is the full (absolute) path to the output directory created in Step 8. Be sure to include trailing slash `/` characters.
 
@@ -116,7 +117,7 @@ A few notes before beginning are:
 
 ### Additional Notes and Comments for CUI extraction
 * Be sure to add `mvn` to your $PATH if doing the Manual Installation
-* The output will be a newline-delimited text file of CUIs with the same root file name as the input file and ending with `.cuis.txt`
+* The output will be a CSV file of CUIs with the same root file name as the input file and ending with `.cuis.txt`
 * It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
 
 ## Step 2: Data Extraction
