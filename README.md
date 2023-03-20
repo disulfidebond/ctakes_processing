@@ -42,7 +42,7 @@ It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) scr
 
 # Postprocessing Steps
 
-![Postprocessing Overview](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/media/postprocessing_overview.png)
+![Postprocessing Overview](media/postprocessing_overview.png)
 
 There are three components to postprocessing, and generating an output flatfile with the format:
 
@@ -147,3 +147,7 @@ A few important caveats are:
 1. All root filenames must be unique, e.g. if the file `E00001.txt` exists, then if the file `E00001.txt.xmi.gz` exists, it must be for the same medical note.
 2. The Document ID will be the same for both the Data Extractor and CUI Extractor, e.g. the medical note with document identifier E00001.txt will have the XMI output file E00001.txt.xmi.gz, meaning the Document ID in both outputs will be E00001
 2. Medical note filenames must have the format `Identifier.txt`, and additional periods cannot be used, but other characters can be used, e.g. `E00001_1.txt` is valid, but `E00001.1.txt` will cause errors.
+
+
+## Visualizing CUIs
+There are several steps
