@@ -171,9 +171,27 @@ Next, run the following commands to copy the necessary files to the root level o
 
 The CVD Tool will then open. Before loading an XMI file, you must load a TypeSystem file to provide context:
 
-![Load TypeSystem](media/after_CVD_launch_1.png)
+##### Select Load TypeSystem
+![Select TypeSystem](media/after_CVD_launch_1.png)
+
+##### Locate Typesystem.xml file
+![Load TypeSystem](media/after_CVD_launch_2.png)
 
 Once the TypeSystem.xml file is loaded, you can load the output XMI file. Below are instructions that assume the output will be in the `cTAKES_4.0.0.1/outputDir` directory:
 
-![Load XMI]()
+##### Locate output cTAKES XMI file
+![Select XMI file](media/after_CVD_launch_3.png)
 
+![Load XMI file](media/after_CVD_launch_4.png)
+
+The note text should appear in the right pane. If it does not, then double check the XMI file and ensure it was generated without any errors.
+
+To select the relevant region of the XMI file to view, you need to select
+
+    AnnotationIndex
+      -> uima.tcas.Annotation
+        -> org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation
+
+This will show all of the CUIs. The ones of interest are usually `EntityMention` and `EventMention`
+
+##### Show CUIs generate by cTAKES
