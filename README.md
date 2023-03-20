@@ -50,6 +50,8 @@ There are three components to postprocessing, and generating an output flatfile 
 
 The first two steps (CUI extraction and Data Extraction) can be run in any order, but the output from both are required to run the third (final) step, which generates a text `||`-delimited output flat file.
 
+For information on visualizing CUIs, including tracking exactly what spans of text were mapped to a given CUI, skip to the section on [visualizing CUIs](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis).
+
 ## Step 1: CUI Extraction
 This step uses java to extract the CUIs within the cTAKES XMI output files, while maintaining the correct ordering and CUI counts. The protocol has been extensively tested, but please note that the steps must be followed **exactly**. 
 
