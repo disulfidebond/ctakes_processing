@@ -194,4 +194,31 @@ To select the relevant region of the XMI file to view, you need to select
 
 This will show all of the CUIs. The ones of interest are usually `EntityMention` and `EventMention`
 
-##### Show CUIs generate by cTAKES
+##### CVD Full View
+![Full View](media/after_CVD_launch_5.png)
+
+##### CVD Zoomed-in View of Analysis Results Window Pane
+![Zoomed](media/after_CVD_launch_6.png)
+
+Click the first entry in `EntityMention`. This will highlight the `Medical` term in the Note text. If you click the `0-` icon to the left, you'll see additional metadata, such as `begin`, `end`, and `ontologyConceptArr`. Click the `0-` icon next to `ontologyConceptArr`, and you'll see one entry at index 0 that was found by cTAKES (Note: if you click on another nested term, the highlighted text will fade, this is normal). Click the `0-` icon next to `org.apache.ctakes.typesystem.type.refsem.UmlsConcept`, and you'll see information like the `codingScheme` and the `cui` C0206476.
+
+![Parsed cTAKES 1](media/after_CVD_launch_7.png)
+
+Note that sometimes cTAKES will generate multiple CUIs per segment of text. The behavior in the postprocessing workflow is to export all unique CUIs that are detected, meaning if cTAKES outputs the same CUI twice **for a given segmant of text**, then only one CUI will be returned, but if it reports two different CUIs, then both will be returned.
+
+For an example of this, select the 12th indexed item for `EntityMention`, then follow the same steps above to see what CUIs cTAKES predicted were present. 
+
+![Parsed cTAKES 2](media/after_CVD_launch_8.png)
+
+For the term "General", it predicted the CUI C4521767 and the CUI C0205246.
+
+To exit CVD, either click the X in the upper right corner, or press control-c in the Terminal window that launched CVD.
+
+### Tie-in
+To see the CUI in the XMI file as an XML tag, open Terminal and navigate to the directory where the XMI is, you need to run the `simple_xmi_viewer` bash script. This breaks apart the XMI file into something that is close to human readable. however, running the script by itself will output the entire XMI file to the screen, so you need to setup a filter. To do this, run the following command to view the CUI C4521767 in the cTAKES output file:
+
+    ./simple_xmi_viewer | grep 'cui' | grep C0205246
+
+The output should look like this (assuming you used the file `dr_nutritious_1.txt.xmi`):
+
+![Parsed cTAKES 3](media/after_CVD_launch_9.png)
