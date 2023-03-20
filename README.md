@@ -215,7 +215,7 @@ For the term "General", it predicted the CUI C4521767 and the CUI C0205246.
 To exit CVD, either click the X in the upper right corner, or press control-c in the Terminal window that launched CVD.
 
 ### Tie-in
-To see the CUI in the XMI file as an XML tag, open Terminal and navigate to the directory where the XMI is, you need to run the `simple_xmi_viewer` bash script. This breaks apart the XMI file into something that is close to human readable. however, running the script by itself will output the entire XMI file to the screen, so you need to setup a filter. To do this, run the following command to view the CUI C4521767 in the cTAKES output file:
+To see the CUI in the XMI file as an XML tag, open Terminal and navigate to the directory where the XMI is, you need to run the `simple_xmi_viewer` bash script. This breaks apart the XMI file into something that is close to human readable. However, running the script by itself will output the entire XMI file to the screen, so you need to setup a filter. To do this, run the following command to view the CUI C4521767 in the cTAKES output file:
 
     ./simple_xmi_viewer | grep 'cui' | grep C0205246
 
