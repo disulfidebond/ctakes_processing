@@ -152,4 +152,20 @@ A few important caveats are:
 
 
 ## Visualizing CUIs
-There are several steps
+cTAKES has a builtin tool to visualize CUIs in the source document, which includes information on how cTAKES predicted a given span of text should map to a given CUI.
+
+Important: The steps below can be run using only the downloaded cTAKES package.
+
+First, ensure your computing environment is setup to run cTAKES as described above (for example, be certain `$JAVA_HOME` points to your Java 1.8 installation).
+
+Next, run the following commands to copy the necessary files to the root level of the cTAKES directory:
+
+    # assumes ctakes directory is called ctakes_4.0.0.1
+    cd ctakes_4.0.0.1
+    cp resources/org/apache/ctakes/typesystem/types/TypeSystem.xml ./
+    # if using the provided examples, run the next two steps, otherwise copy the output XMI files to the ctakes_4.0.0.1 directory
+    cp resources/org/apache/ctakes/examples/notes/*.txt inputDir/
+    ./runCtakes.sh
+    # then, start cTAKES CVD tool
+    ./bin/runctakesCVD.mod.sh
+
