@@ -41,6 +41,9 @@ It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) scr
 * The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
 
 # Postprocessing Steps
+
+![Postprocessing Overview](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/media/postprocessing_overview.png)
+
 There are three components to postprocessing, and generating an output flatfile with the format:
 
     FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||OffsetStart||OffsetStop||DomainCode||Polarity
