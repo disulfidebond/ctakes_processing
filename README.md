@@ -152,7 +152,7 @@ A few important caveats are:
 
 
 ## Visualizing CUIs
-cTAKES has a builtin tool to visualize CUIs in the source document, which includes information on how cTAKES predicted a given span of text should map to a given CUI.
+cTAKES has a builtin tool to visualize CUIs in the source document, called the CAS Visualization Debugger (CVD), which includes information on how cTAKES predicted a given span of text should map to a given CUI.
 
 Important: The steps below can be run using only the downloaded cTAKES package.
 
@@ -168,4 +168,12 @@ Next, run the following commands to copy the necessary files to the root level o
     ./runCtakes.sh
     # then, start cTAKES CVD tool
     ./bin/runctakesCVD.mod.sh
+
+The CVD Tool will then open. Before loading an XMI file, you must load a TypeSystem file to provide context:
+
+![Load TypeSystem](media/after_CVD_launch_1.png)
+
+Once the TypeSystem.xml file is loaded, you can load the output XMI file. Below are instructions that assume the output will be in the `cTAKES_4.0.0.1/outputDir` directory:
+
+![Load XMI]()
 
