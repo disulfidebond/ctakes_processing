@@ -14,6 +14,24 @@ There are several versions of cTAKES available. This workflow uses cTAKES 4.0.0.
 In addition to cTAKES, you must have Java installed, and python 3.6+ installed. Although the documentation stated cTAKES is compatible with 
 Java 1.8+, we found Java 15 worked the best.
 
+# Custom cTAKES Dictionary Creation
+1. Download dictionary from UMLS at https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html , note this requires authentication each time you download the file.
+2. Unzip the `mmsys.zip` file, and copy the compressed contents **to the same directory where the \*.nlm files reside** (this is usually the parent directory)
+3. Run the *run_mac.sh* file to launch MetamorphoSys
+4. Configure a custom dictionary following the prompts and the guide [here](https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html). When selecting sources, note that this provides a selection of sources that can be used when creating a custom dictionary. For example, if you select RXNorm and SNOMEDCT_US as sources, then when creating the custom dictionary in step 5, you will have the option of using SNOMEDCT_US only, RXNorm only, or both RXNorm and SNOMEDCT_US in the custom dictionary.
+5. Run *./bin/runDictionaryCreator.sh* to [create the custom dictionary](https://cwiki.apache.org/confluence/display/CTAKES/Dictionary+Creator+GUI)
+
+## Notes and Comments
+1. Steps 1-4 above did not work on our lab servers running Centos 7. My speculation is there was a problem/conflict with X11, but it worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel chipset. Steps 1-4 above can be completed on Windows or MacOSX, then the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
+2. If you do not follow step 2 above exactly, the MetamorphoSys App will not be able to locate the required UMLS files.
+3. If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US".
+4. To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
+
+#### Image 1: Example subset selection
+
+
+#### Image 2: Start configuration
+
 # Preprocessing
 First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
 
