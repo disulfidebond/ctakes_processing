@@ -17,7 +17,7 @@ Java 1.8+, we found Java 15 worked the best.
 # Custom cTAKES Dictionary Creation
 1. Download dictionary from UMLS at https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html , note this requires authentication each time you download the file.
 2. Unzip the `mmsys.zip` file, and copy the compressed contents **to the same directory where the \*.nlm files reside** (this is usually the parent directory)
-3. Run the *run_mac.sh* file to launch MetamorphoSys
+3. Run the *run_mac.sh* file to launch MetamorphoSys on MacOSX, or the *run.bat* file on Windows.
 4. Configure a custom dictionary following the prompts and the guide [here](https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html). When selecting sources, note that this provides a selection of sources that can be used when creating a custom dictionary. For example, if you select RXNorm and SNOMEDCT_US as sources, then when creating the custom dictionary in step 5, you will have the option of using SNOMEDCT_US only, RXNorm only, or both RXNorm and SNOMEDCT_US in the custom dictionary.
 5. Run *./bin/runDictionaryCreator.sh* to [create the custom dictionary](https://cwiki.apache.org/confluence/display/CTAKES/Dictionary+Creator+GUI)
 
@@ -28,9 +28,10 @@ Java 1.8+, we found Java 15 worked the best.
 4. To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
 
 #### Image 1: Example subset selection
-
+![](media/dict_create_img1.png)
 
 #### Image 2: Start configuration
+![](media/dict_create_img2.png)
 
 # Preprocessing
 First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
