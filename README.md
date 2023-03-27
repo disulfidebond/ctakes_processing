@@ -22,7 +22,7 @@ Java 1.8+, we found Java 15 worked the best.
 5. Run *./bin/runDictionaryCreator.sh* to [create the custom dictionary](https://cwiki.apache.org/confluence/display/CTAKES/Dictionary+Creator+GUI)
 
 ## Notes and Comments
-1. Steps 1-4 above did not work on our lab servers running Centos 7. My speculation is there was a problem/conflict with X11, but it worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel chipset. Steps 1-4 above can be completed on Windows or MacOSX, then the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
+1. Steps 1-4 above did not work on our lab servers running Centos 7. My speculation is there was a problem/conflict with X11, but it worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel x86_64 chipset. After completing steps 1-4 above on Windows or MacOSX, the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
 2. If you do not follow step 2 above exactly, the MetamorphoSys App will not be able to locate the required UMLS files.
 3. If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US".
 4. To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
