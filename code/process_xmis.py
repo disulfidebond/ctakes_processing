@@ -2,6 +2,7 @@
 
 # This is a Python reimplementation of
 # ctakes-misc/src/main/java/org/apache/ctakes/consumers/ExtractCuiSequences.java
+# Credit: Dmitriy Dligach
 
 import os
 import pathlib
