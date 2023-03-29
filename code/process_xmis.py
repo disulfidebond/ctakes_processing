@@ -12,8 +12,12 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--xmiDir', '-i', help='name of directory containing XMI files', required=True)
 parser.add_argument('--outputFile', '-o', help='output file name', required=True)
+parser.add_argument('--excludeText', '-x', choices=["True", "False"], default="True", const="True", nargs='?', help='Setting this to False means the original text will be added to the output file. THIS MAY EXPOSE PHI and should not be set to False unless you know what you are doing.')
 args = parser.parse_args()
 
+excludeTextBool = True
+if args.excludeText == "False":
+  excludeTextBool = False
 
 
 xmi_dir = str(args.xmiDir)
@@ -49,7 +53,7 @@ def get_cui_coding_sceme_preferred_text(identified_annot):
 
   return cui_info
 
-def process_xmi_file(xmi_path, type_system, out_file):
+def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = True):
   """This is a Python staple"""
 
   xmi_file = open(xmi_path, 'rb')
@@ -65,14 +69,24 @@ def process_xmi_file(xmi_path, type_system, out_file):
 
     cui_info = get_cui_coding_sceme_preferred_text(ident_annot)
     for cui, (coding_scheme, pref_text) in cui_info.items():
-      out_tuple = (
-        source_file_name,
-        cui,
-        text,
-        coding_scheme.lower(),
-        str(pref_text), # sometimes None
-        str(start_offset),
-        str(end_offset))
+      if not excludeTextBool:
+        out_tuple = (
+          source_file_name,
+          cui,
+          text,
+          coding_scheme.lower(),
+          str(pref_text), # sometimes None
+          str(start_offset),
+          str(end_offset))
+      else:
+        out_tuple = (
+          source_file_name,
+          cui,
+          coding_scheme.lower(),
+          str(pref_text),
+          str(start_offset),
+          str(end_offset)
+        )
       out_tuples.append(out_tuple)
 
   # output tuples sorted by start offset
