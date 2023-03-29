@@ -71,7 +71,7 @@ The first two steps (CUI extraction and Data Extraction) can be run in any order
 
 For information on visualizing CUIs, including tracking exactly what spans of text were mapped to a given CUI, skip to the section on [visualizing CUIs](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis).
 
-Note that CUI Extraction can be completed using either Java or Python. We've tested both approaches and confirmed they output the same result.
+Note that CUI Extraction can be completed using either [Java](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#step-1-cui-extraction-java-based) or [Python](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#step-1-cui-extraction-python-based) (do not use both--once CUIs have been extracted, proceed to step 2).  We've tested each of the approaches and confirmed that they output the same set of CUIs.
 
 ## Step 1: CUI Extraction (Java-Based)
 This step uses java to extract the CUIs within the cTAKES XMI output files, while maintaining the correct ordering and CUI counts. The protocol has been extensively tested, but please note that the steps must be followed **exactly**. 
@@ -80,7 +80,7 @@ There are two ways to run this step: using Docker, or via manual installation. B
 
 ### Docker Image
 
-**IMPORTANT:** The underlying OS (Centos7) in the docker image [is official EOL](https://www.centos.org/centos-linux-eol/). This OS version has known and unpatched security vulnerabilities, so it is extremely important to run the docker container in a controlled development environment.
+**IMPORTANT:** The underlying OS (Centos7) in the docker image [is officially EOL](https://www.centos.org/centos-linux-eol/). This OS version has known and unpatched security vulnerabilities, so it is extremely important to run the docker container in a controlled development environment.
 
 
 First, download the Docker image from Dockerhub.
@@ -142,15 +142,19 @@ A few notes before beginning are:
 * It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
 
 ## Step 1: CUI Extraction (Python-Based)
-The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) for CUI extraction is a pythonic implementation of the Java workflow.
+The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) for CUI extraction is a pythonic implementation of the Java workflow. It requires the cassis library.
 
 It requires a TypeSystem.xml file that must be in the same directory as the python script, the name of an input directory, and a name for the output file. If possible, you should use the TypeSystem.xml file provided with cTAKES, but if this is not available, then one is [provided](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/TypeSystem.xml) in this repo.
 
 The usage is:
 
-    python process_xmi.py -i INPUT_DIRECTORY -o OUTPUT_FILE_NAME
+    python process_xmi.py -i INPUT_DIRECTORY -x [True,False] -o OUTPUT_FILE_NAME
 
-It requires the cassis library.
+The `-x` option indicates if you would like to include the original text that was used to generate a CUI. **NOTE** That allowing the original text to be included as part of the output may expose PHI. If you are uncertain about what to do, then set this to `False`
+
+The output will be a `|` delimited list of 
+
+    FileName|CUI|OriginalText|DomainCode|PreferredText|Start|Stop
 
 ## Step 2: Data Extraction
 This workflow takes as input either a directory of cTAKES output XMI files, or the input medical notes files. It uses the python script [note_data_extractor.py](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/note_data_extractor.py) to extract the Document ID, Note Type, Patient ID, Encounter ID, and Note Timestamp. The required input arguments are:
