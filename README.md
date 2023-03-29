@@ -71,7 +71,9 @@ The first two steps (CUI extraction and Data Extraction) can be run in any order
 
 For information on visualizing CUIs, including tracking exactly what spans of text were mapped to a given CUI, skip to the section on [visualizing CUIs](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis).
 
-## Step 1: CUI Extraction
+Note that CUI Extraction can be completed using either Java or Python. We've tested both approaches and confirmed they output the same result.
+
+## Step 1: CUI Extraction (Java-Based)
 This step uses java to extract the CUIs within the cTAKES XMI output files, while maintaining the correct ordering and CUI counts. The protocol has been extensively tested, but please note that the steps must be followed **exactly**. 
 
 There are two ways to run this step: using Docker, or via manual installation. Both require the most recent Java to run (tested with Java 19).
@@ -138,6 +140,17 @@ A few notes before beginning are:
 * Be sure to add `mvn` to your $PATH if doing the Manual Installation
 * The output will be a CSV file of CUIs with the same root file name as the input file and ending with `.cuis.txt`
 * It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
+
+## Step 1: CUI Extraction (Python-Based)
+The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) for CUI extraction is a pythonic implementation of the Java workflow.
+
+It requires a TypeSystem.xml file that must be in the same directory as the python script, the name of an input directory, and a name for the output file. If possible, you should use the TypeSystem.xml file provided with cTAKES, but if this is not available, then one is [provided](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/TypeSystem.xml) in this repo.
+
+The usage is:
+
+    python process_xmi.py -i INPUT_DIRECTORY -o OUTPUT_FILE_NAME
+
+It requires the cassis library.
 
 ## Step 2: Data Extraction
 This workflow takes as input either a directory of cTAKES output XMI files, or the input medical notes files. It uses the python script [note_data_extractor.py](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/note_data_extractor.py) to extract the Document ID, Note Type, Patient ID, Encounter ID, and Note Timestamp. The required input arguments are:
