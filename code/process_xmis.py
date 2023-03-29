@@ -73,11 +73,11 @@ def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = True):
         out_tuple = (
           source_file_name,
           cui,
-          text,
           coding_scheme.lower(),
           str(pref_text), # sometimes None
           str(start_offset),
-          str(end_offset))
+          str(end_offset)),
+          text
       else:
         out_tuple = (
           source_file_name,
@@ -90,7 +90,7 @@ def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = True):
       out_tuples.append(out_tuple)
 
   # output tuples sorted by start offset
-  out_tuples.sort(key = lambda x: int(x[5]))
+  out_tuples.sort(key = lambda x: int(x[4]))
   for out_tuple in out_tuples:
     out_file.write('|'.join(out_tuple) + '\n')
 
