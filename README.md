@@ -58,6 +58,7 @@ It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) scr
 * It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
 * Following the preprocessing steps listed above, the medical notes were ready for the processing and analysis steps in the cTAKES overview. There is an exponential increase in processing time versus file size, so it is very important to split input files by size.
 * The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
+* There is a [beta version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) of running parallel instances of cTAKES using python instead of Bash/Terminal.
 
 # Postprocessing Steps
 
