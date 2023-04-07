@@ -47,11 +47,23 @@ def get_cui_coding_sceme_preferred_text(identified_annot):
       coding_scheme = ontology_concept['codingScheme']
       pref_text = ontology_concept['preferredText']
       cui = ontology_concept['cui']
-      cui_info[cui] = (coding_scheme, pref_text)
+      if cui not in cui_info.keys():
+        cui_info[cui] = [[coding_scheme], [pref_text]]
+      else:
+        v_tmp = cui_info[cui]
+        v_tmp[0].append(coding_scheme)
+        v_tmp[1].append(pref_text)
+        cui_info[cui] = v_tmp
     else:
-      print('This never happens anymore, but I think it used to')
+      print('WARNING, encountered ontology concept that was not type refsem_UmlsConcept')
+  cui_info_final = dict()
+  for k,v in cui_info.items():
+    cd_sch = list(set(v[0]))
+    cd_sch = ','.join(cd_sch)
+    pf_txt = v[1][0]
+    cui_info_final[k] = (cd_sch, pf_txt)
+  return cui_info_final
 
-  return cui_info
 
 def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = True):
   """This is a Python staple"""
