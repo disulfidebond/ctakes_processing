@@ -20,6 +20,7 @@ import time
 
 '''
 Version 1.0: Parallelized implementation of pythonic workflow that uses Cassis to generate a flatfile 
+Requirements: A TypeSystem.xml file must be in the same working directory as this python script
 '''
 
 # setup
