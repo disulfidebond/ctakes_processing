@@ -157,6 +157,9 @@ The output will be a `|` delimited list of
 
     FileName|CUI|OriginalText|DomainCode|PreferredText|Start|Stop
 
+Additionally, a [parallelized version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) of the python-based CUI extraction step is available, with similar usage as shown above. The main difference is the parallelized version is intended to process large numbers of files, and by default each worker node will no longer output a flatfile in addition to the final output file.
+
+
 ## Step 2: Data Extraction
 This workflow takes as input either a directory of cTAKES output XMI files, or the input medical notes files. It uses the python script [note_data_extractor.py](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/note_data_extractor.py) to extract the Document ID, Note Type, Patient ID, Encounter ID, and Note Timestamp. The required input arguments are:
 
