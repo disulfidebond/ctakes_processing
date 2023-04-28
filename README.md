@@ -93,15 +93,14 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
 * To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
 
 # Preprocessing
-First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
+* First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
 
-Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKES.Notes.getFileSizes.v3.py) to generate a file list with file sizes, and run [parseEntries.cTAKES.Notes.sortBySize.v3.py](code/parseEntries.cTAKES.Notes.sortBySize.v3.py) to sort the files by size.
+* Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKES.Notes.getFileSizes.v3.py) to generate a file list with file sizes, and run [parseEntries.cTAKES.Notes.sortBySize.v3.py](code/parseEntries.cTAKES.Notes.sortBySize.v3.py) to sort the files by size. You may wish to clip the header from each file to ensure cTAKES does not assign CUIs to the header. 
 
 ![](media/cTAKES_preprocessing.png)
 
-You may wish to clip the header from each file to ensure cTAKES does not assign CUIs to the header. 
 
-Additionally, run [this script]() to generate a manifest of all headers mapping to each input file.
+Finally, run [this script]() to generate a manifest of all headers mapping to each input file.
 
 # Run cTAKES
 cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. 
