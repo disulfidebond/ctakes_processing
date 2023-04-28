@@ -12,7 +12,7 @@ To run the steps above, you will need:
 - Java 1.8 or higher
 - An API key with the UMLS Terminology Services (this is free but requires an [account](https://uts.nlm.nih.gov/uts/login))
 
-The most recent version of cTAKES is cTAKES 5.0, which is the recommended version. To use cTAKES version 5.0, you will need to [clone the Git Repository](https://github.com/apache/ctakes), then use Maven in an IDE such as IntelliJ IDEA to build, compile, and then create the required java jar files.
+The most recent version of cTAKES is cTAKES 5.0, which is the recommended version. To use cTAKES version 5.0, you will need to [clone the Git Repository](https://github.com/apache/ctakes), then use Maven in an IDE such as IntelliJ IDEA to build, compile, and then create the required java jar files. A full description of building and compiling cTAKES 5.0 is beyond the scope of this writeup, but a summary description of the steps is available as an appendix.
 
 Alternatively, you can use the User Installation of cTAKES 4.0.0.1, which is available for download [here](https://ctakes.apache.org), and has installation instructions [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+User+Install+Guide). 
 
@@ -237,3 +237,26 @@ To see the CUI in the XMI file as an XML tag, open Terminal and navigate to the 
 The output should look like this (assuming you used the file `dr_nutritious_1.txt.xmi`):
 
 ![Parsed cTAKES 3](media/after_CVD_launch_9.png)
+
+# Appendix: Installing cTAKES 5.0
+Requirements: 
+* Git installed
+* Maven installed
+* gcc compiler
+* Java 1.8 SDK
+* Familiarity with the IntelliJ IDEA development environment
+* Experience with Java is strongly recommended
+
+## Steps to create cTAKES 5.0 distribution
+
+1. Launch IntelliJIDEA Select `File -> New Project from Version Control`, then enter the GitHub clone URL.
+2. Select `View -> Tool Windows -> Maven` to bring up the Maven interface.
+3. Ensure that the profiles `disable-java8-doclint` and `zips-build` are enabled (see [Image 1](media/Screenshot_2023-04-19_at_10.37.49_AM.png) below). This should be the default.
+4. `View -> Tool Windows -> Maven: select Lifecycle -> right click clean`, select run ctakes[clean]
+5. Select Lifecycle-> right click compile, select `run ctakes[compile]`
+  * Note: if it throws the error `package jdk.nashorn.internal.ir.annotations does not exist`, then ensure Java 1.8 SDK is being used for the project under `File -> Project Structure`, then repeat steps 4 and 5
+6. Select Lifecycle-> right click install, then select `run ctakes[install]`
+  * Note1: if it throws an error similar to `group id '896530319' is too big ( > 2097151 ). Use STAR or POSIX extensions to overcome this limit`, modify the `<tarLongFileMode>gnu</tarLongFileMode>` within the configuration tag and after the descriptors tag in the main `pom.xml` file. Then, rerun steps 4-6.
+7. The output is in the `ctakes-distribution` folder. You want the zip or tar.gz compressed files that end in `-bin`
+
+![](media/updated_cTAKES_writeup_img8.png)
