@@ -65,7 +65,7 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
 
 ![](media/updated_cTAKES_writeup_img6.png)
 
-###### update [runCTAKES.sh](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/runCTAKES.sh) script in this repo to replace CUSTOMNAME with the name of the custom dictionary you just created
+###### update [runCTAKES.sh](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/runCTAKES.sh) script that you cloned with this repo to replace CUSTOMNAME with the name of the custom dictionary you just created
 
     # code
     ./bin/runPiperFile.sh -p resources/org/apache/ctakes/clinical/pipeline/DefaultFastPipeline.piper -l resources/org/apache/ctakes/dictionary/lookup/fast/CUSTOMNAME.xml -i inputDir --xmiOut outputDir &>> ctakes_${TSTRING}_log.txt
@@ -93,17 +93,23 @@ cTAKES is atomic, and by itself cannot be parallelized. However, it is possible 
 
 A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) that uses the Multiprocessing library does this for you. It requires as input:
 
-* -i for the name of the input directory of notes files
+* `-i` for the name of the input directory of notes files
 
 Optional input arguments are:
-* --splitCount for the number of files to process per instance [5000]
-* -- instanceLimit for the number of parallel workers to start [10]
+* `--splitCount` for the number of files to process per instance [5000]
+* `--instanceLimit` for the number of parallel workers to start [10]
 
 The output will be directories with the naming scheme `ctakes_x_runInstance` where x is the cTAKES version being run. Each output directory from each worker will have log files and an `outputDir` directory containing gz-compressed XMI files.
 
 If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
 
 The code for running cTAKES can be used with cTAKES 4.0.0.1 and cTAKES 5.0 interchangeably, but be certain the piper file is formatted correctly.
+
+After all cTAKES processing has completed, you can copy the compressed XMI output files from each directory with a command similar to:
+
+    for i in ctakes_runInstance_* ; do
+      cp ${i}/outputDir/* someDestinationFolder/
+    done
 
 # Postprocess Notes
 
