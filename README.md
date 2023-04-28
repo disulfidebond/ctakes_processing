@@ -100,8 +100,6 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
 ![](media/cTAKES_preprocessing.png)
 
 
-Finally, run [this script]() to generate a manifest of all headers mapping to each input file.
-
 # Run cTAKES
 cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. 
 
@@ -128,88 +126,16 @@ If the worker encounters an error with cTAKES, it stops, creates a tar-gz of the
 
 ![Postprocessing Overview](media/postprocessing_overview.png)
 
-There are three components to postprocessing, and generating an output flatfile with the format:
-
-    FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||OffsetStart||OffsetStop||DomainCode||Polarity
-
-The first two steps (CUI extraction and Data Extraction) can be run in any order, but the output from both are required to run the third (final) step, which generates a text `||`-delimited output flat file.
+There are three steps to generating a flat text file (flatfile) from the cTAKES XMI output: CUI extraction, data extraction, and merging output. The merged output file will have the following columns:
+    Document_ID|Note_Type|Patient_ID|Encounter_ID|Time_Stamp|CUI|Preferred_Text|Offset_Start|Offset_Stop|Domain_Code|Polarity
 
 For information on visualizing CUIs, including tracking exactly what spans of text were mapped to a given CUI, skip to the section on [visualizing CUIs](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis).
 
-Note that CUI Extraction can be completed using either [Java](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#step-1-cui-extraction-java-based) or [Python](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#step-1-cui-extraction-python-based) (do not use both--once CUIs have been extracted, proceed to step 2).  We've tested each of the approaches and confirmed that they output the same set of CUIs.
-
-## Step 1: CUI Extraction (Java-Based)
-This step uses java to extract the CUIs within the cTAKES XMI output files, while maintaining the correct ordering and CUI counts. The protocol has been extensively tested, but please note that the steps must be followed **exactly**. 
-
-There are two ways to run this step: using Docker, or via manual installation. Both require the most recent Java to run (tested with Java 19).
-
-### Docker Image
-
-**IMPORTANT:** The underlying OS (Centos7) in the docker image [is officially EOL](https://www.centos.org/centos-linux-eol/). This OS version has known and unpatched security vulnerabilities, so it is extremely important to run the docker container in a controlled development environment.
-
-
-First, download the Docker image from Dockerhub.
-
-    docker pull datacram/c7cuiextractor:v1-2
-
-Then, create a docker container with an attached volume to copy files to and from the Docker container 
-
-    # assumes you want to create a docker container 
-    # with the directory data_vol as the attached volume
-    # that has an interactive shell
-    # NOTE: the attached volume *must* be mounted at /dataspace or the workflow will not function!
-    docker run -it -v data_vol:/dataspace datacram/c7cuiextractor:v1-2
-
-Next, decompress and copy the XMI files, and the bash script [runCUIextractor.sh](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/runCUIextractor.sh) to the `data_vol` folder in the example above. There are several ways to do this, below is one example:
-
-    # run from Terminal on host
-    for i in xmiDir/*.gz ; do gunzip $i ; DONE
-    cp xmiDir/*.xmi datavol/inputDir/
-    # run from docker container, XMI files must be copied to `/workspace/inputDir` folder
-    cp inputDir/* /workspace/inputDir/
-
-Finally, run the bash script from the Docker Container to process the files, where `INPUT_DIRECTORY` and `OUTPUT_DIRECTORY` are the input directory you copied with the cTAKES XMI files, 
-
-    # from docker container
-    ./runCUIextractor.sh INPUT_DIRECTORY OUTPUT_DIRECTORY
-
-When complete, the CUI output files will be in the `/workspace/outputDir` folder.
-    
-### Manual Installation
-A few notes before beginning are:
-* The installation instructions and workflow have been fully tested on Centos7 Linux, but they should work on all Linux distros.
-* The installation instructions must be followed **exactly**, especially with regards to software versions. For example, we found that the cTAKES workflow tended to work best with Java 15, compiling the base cTAKES package required Java 1.8, but the CUI extraction portion of the workflow should use the latest Java (tested with Java 19). 
-* The installation and setup may take up to 2 hours, but only needs to be performed once. 
-* The resulting installation directory can then be copied to other locations, however, `maven` will still look to the original user folder when running, meaning if you copy the directory to a run node and the ~/.m2 directory changes or cannot be found, the workflow will not function correctly.
-* Most versions of the [Java 8 JDK are EOL](https://www.oracle.com/java/technologies/javase/javase8-archive-downloads.html), and will not have security or other updates. It is **extremely important** to run the Java portion of the workflow in a controlled development environment.
-
-#### Setup Steps
-1. Download and install Java 1.8, then ensure that this is the default Java version.
-2. Download and install [maven](https://maven.apache.org/install.html), and ensure that maven is pointed to Java 1.8
-3. Download cTAKES using SVN via `svn co https://svn.apache.org/repos/asf/ctakes/trunk/` (do not use the GitHub version!).
-4. Change to the `trunk` directory, then run `mvn clean compile` (this will take up to an hour).
-5. In the `trunk` directory, run `mvn install -Dmaven.test.skip=true` (this will take up to 45 minutes).
-6. Change to the parent directory of `trunk`, then download the CUI extractor java code via `git clone https://github.com/disulfidebond/ctakes-misc.git`
-7. If not done so already, [download and install Java 19](https://www.oracle.com/java/technologies/downloads/#java19). Ensure that maven is now pointed to this Java version.
-7. Change to the `ctakes-misc` directory, then run `mvn clean compile` (this will take up to 15 minutes).
-8. Create a directory named `inputDir` in the parent directory of `ctakes-misc`, then create a directory named `outputDir` in the parent directory of `ctakes-misc` (See Overview Figure below).
-9. **After** completing step 8, unset `$JAVA_HOME` and `$CTAKES_HOME` variables. Then, from the `ctakes-misc` directory, use the following command to extract CUIs, where `/path/to/inputDir` is the full (absolute) path to the input directory created in Step 8, and `/path/to/outputDir` is the full (absolute) path to the output directory created in Step 8. Be sure to include trailing slash `/` characters.
-
-        mvn exec:java -Dexec.mainClass="org.apache.ctakes.consumers.ExtractCuiSequences" -Dexec.args="--xmi-dir /path/to/inputDir/ --output-dir /path/to/outputDir/"
-
-#### Overview Figure
-![Overview Figure](media/Overview_Figure.png)
-
-
-### Additional Notes and Comments for CUI extraction
-* Be sure to add `mvn` to your $PATH if doing the Manual Installation
-* The output will be a CSV file of CUIs with the same root file name as the input file and ending with `.cuis.txt`
-* It is possible to parallelize the CUI extraction workflow similar to cTAKES, but this has not been done yet with this version.
 
 ## Step 1: CUI Extraction (Python-Based)
-The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) for CUI extraction is a pythonic implementation of the Java workflow. It requires the cassis library.
+The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) for CUI extraction is a pythonic implementation of the Java workflow. It requires the [dkpro-cassis library](https://pypi.org/project/dkpro-cassis/) to be installed via `pip`, and a TypeSystem.xml file that must be in the same directory as the python script
 
-It requires a TypeSystem.xml file that must be in the same directory as the python script, the name of an input directory, and a name for the output file. If possible, you should use the TypeSystem.xml file provided with cTAKES, but if this is not available, then one is [provided](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/TypeSystem.xml) in this repo.
+If possible, you should use the TypeSystem.xml file provided with your cTAKES installation, which is normally located at `resources/org/apache/ctakes/typesystem/types/TypeSystem.xml`, but if this file is not available, then one is [provided](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/TypeSystem.xml) in this repo.
 
 The usage is:
 
@@ -236,13 +162,13 @@ This workflow takes as input either a directory of cTAKES output XMI files, or t
 * outputFile -> the name for the output CSV file. (Required)
 * previewMode -> if set to 'True', then the workflow will parse the first note file, print the output to the screen, and then exit without creating an output file. The default is False.
 
-### Important Notes for Data Extraction
+#### Important Notes for Data Extraction
 * The script will accept either XMI or a medical note (CSV) file, but you can only provide one set of headers. Meaning, the header indexes for both the medical note files and XMI files must be the same, or you'll need to run the data extractor multiple times.
 * The script will automatically check the provided input files to see if they can be parsed as an XMI file, and if they can be imported as a CSV file into pandas. Although not advised, you can disable this functionality via `forceImport='True'` which will then bypass checking the files.
 * All of the required fields for the headerFile must be provided. If one needs to be skipped (for example, if EncounterID == PatientID), then you enter "-1" for that field, which is shown in the [example](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/example_header_file.txt).
 * The workflow will not check to see if a file name with the same name as the provided outputFile exists before overwriting it.
 
-## Step 3: Generate Final Output Flatfile
+## Step 3: Merge Output
 The python script [generate_flatfile](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/generate_flatfile.py) takes as input the CSV file from Data Extraction, and the output directory from CUI extraction. The usage is fairly straightforward:
 
 * inputCSV -> the CSV file from Data Extraction
