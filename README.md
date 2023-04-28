@@ -12,7 +12,7 @@ To run the steps above, you will need:
 - Java 1.8 or higher
 - An API key with the UMLS Terminology Services (this is free but requires an [account](https://uts.nlm.nih.gov/uts/login))
 
-The most recent version of cTAKES is cTAKES 5.0, which is the recommended version. To use cTAKES version 5.0, you will need to clone the Git Repository, then use Maven in an IDE such as IntelliJ IDEA to build, compile, and then create the required java jar files.
+The most recent version of cTAKES is cTAKES 5.0, which is the recommended version. To use cTAKES version 5.0, you will need to [clone the Git Repository](https://github.com/apache/ctakes), then use Maven in an IDE such as IntelliJ IDEA to build, compile, and then create the required java jar files.
 
 Alternatively, you can use the User Installation of cTAKES 4.0.0.1, which is available for download [here](https://ctakes.apache.org), and has installation instructions [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+User+Install+Guide). 
 
