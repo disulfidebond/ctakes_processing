@@ -19,7 +19,7 @@ Alternatively, you can use the User Installation of cTAKES 4.0.0.1, which is ava
 cTAKES processing requires an NLM library. This can be either a local custom library, or the library online. In both cases, it is required that your workflow authenticates to the NLM, even if you are using a local library. If you need to run cTAKES in an environment that is completely isolated from the Internet, then contact Sean Finan on the cTAKES dev team for assistance.
 
 In addition to cTAKES, you must have Java installed, and python 3.6+ installed. Although the documentation stated cTAKES is compatible with 
-Java 1.8+, we found Java 15 worked the best.
+Java 1.8+, we found Java 15 worked the best, unless you are building/compiling cTAKES 5.0.
 
 # Custom cTAKES Dictionary Creation
 1. Download dictionary from UMLS at https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html , note this requires authentication each time you download the file.
