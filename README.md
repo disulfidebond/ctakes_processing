@@ -111,7 +111,9 @@ If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the i
 ![Postprocessing Overview](media/postprocessing_overview.png)
 
 There are three steps to generating a flat text file (flatfile) from the cTAKES XMI output: CUI extraction, data extraction, and merging output. The merged output file will have the following columns:
-    Document_ID|Note_Type|Patient_ID|Encounter_ID|Time_Stamp|CUI|Preferred_Text|Offset_Start|Offset_Stop|Domain_Code|Polarity
+    
+|Document_ID|Note_Type|Patient_ID|Encounter_ID|Time_Stamp|CUI|Preferred_Text|Offset_Start|Offset_Stop|Domain_Code|Polarity|
+| ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
 
 For information on visualizing CUIs, including tracking exactly what spans of text were mapped to a given CUI, skip to the section on [visualizing CUIs](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis).
 
@@ -127,11 +129,11 @@ The usage is:
 
 The `-x` option indicates if you would like to include the original text that was used to generate a CUI. **NOTE** That allowing the original text to be included as part of the output may expose PHI. If you are uncertain about what to do, then set this to `False`
 
-The output will be a `|` delimited list of 
+The output will be a `|` delimited list (minus the headers shown) of 
 
     FileName|CUI|OriginalText|DomainCode|PreferredText|Start|Stop
 
-Additionally, a [parallelized version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) of the python-based CUI extraction step is available, with similar usage as shown above. The main difference is the parallelized version is intended to process large numbers of files, and by default each worker node will no longer output a flatfile in addition to the final output file.
+Additionally, a [parallelized version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) of the python-based CUI extraction step is available, with similar usage as shown above. The only difference is the parallelized version is intended to process large numbers of files using the Multiprocessing python library, and by default each worker node will no longer output a flatfile in addition to the final output file.
 
 
 ## Step 2: Data Extraction
