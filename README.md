@@ -83,6 +83,7 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
 
 ![](media/cTAKES_preprocessing.png)
 
+* The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
 
 # Run cTAKES
 cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. 
@@ -102,15 +103,13 @@ The output will be directories with the naming scheme `ctakes_x_runInstance` whe
 
 If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
 
-
-## Additional General Notes
-* The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
+The code for running cTAKES can be used with cTAKES 4.0.0.1 and cTAKES 5.0 interchangeably, but be certain the piper file is formatted correctly.
 
 # Postprocess Notes
 
 ![Postprocessing Overview](media/postprocessing_overview.png)
 
-There are three steps to generating a flat text file (flatfile) from the cTAKES XMI output: CUI extraction, data extraction, and merging output. The merged output file will have the following columns:
+There are three steps to generating a flat text file (flatfile) from the cTAKES XMI output: CUI extraction, data extraction, and merging output. The final merged output file will have the following columns:
     
 |Document_ID|Note_Type|Patient_ID|Encounter_ID|Time_Stamp|CUI|Preferred_Text|Offset_Start|Offset_Stop|Domain_Code|Polarity|
 | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ---- |
