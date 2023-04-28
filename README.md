@@ -1,5 +1,28 @@
 # README
 
+Steps for generating flatfile output from clinical notes:
+1. Create custom dictionary using the SNOMEDCT_US vocabulary
+2. Preprocess notes to fit cTAKES requirements 
+3. Run cTAKES
+4. Postprocess notes to convert XMI output to flat text file
+
+To run the steps above, you will need:
+- cTAKES 4.0.0.1 or higher downloaded and installed
+- python 3.6+ installed
+- Java 1.8 or higher
+- An API key with the UMLS Terminology Services (this is free but requires an [account](https://uts.nlm.nih.gov/uts/login))
+
+The most recent version of cTAKES is cTAKES 5.0, which is the recommended version. To use cTAKES version 5.0, you will need to clone the Git Repository, then use Maven in an IDE such as IntelliJ IDEA to build, compile, and then create the required java jar files.
+
+Alternatively, you can use the User Installation of cTAKES 4.0.0.1, which is available for download [here](https://ctakes.apache.org), and has installation instructions [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+User+Install+Guide). 
+
+# Steps to create a custom dictionary with the SNOMEDCT_US vocabulary
+1. Download dictionary from UMLS at https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html , note this requires authentication using the UMLS Terminology Services account you created previously to download the file.
+2. Unzip the `mmsys.zip` file, and copy the compressed contents **to the same directory where the \*.nlm files reside** (this is usually the parent directory)
+3. Run the *run_mac.sh* file to launch MetamorphoSys on MacOSX, or the *run.bat* file on Windows.
+4. Configure a custom dictionary following the prompts and the guide [here](https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html). When selecting sources, note that this provides a selection of sources that can be used when creating a custom dictionary. For example, if you select RXNorm and SNOMEDCT_US as sources, then when creating the custom dictionary in step 5, you will have the option of using SNOMEDCT_US only, RXNorm only, or both RXNorm and SNOMEDCT_US in the custom dictionary.
+
+
 Requirements for running cTAKES, note that CUI extraction (see below) has different requirements that depend on how it is run:
 
 - cTAKES 4.0.0.1 installed
@@ -18,14 +41,43 @@ Java 1.8+, we found Java 15 worked the best.
 1. Download dictionary from UMLS at https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html , note this requires authentication each time you download the file.
 2. Unzip the `mmsys.zip` file, and copy the compressed contents **to the same directory where the \*.nlm files reside** (this is usually the parent directory)
 3. Run the *run_mac.sh* file to launch MetamorphoSys on MacOSX, or the *run.bat* file on Windows.
-4. Configure a custom dictionary following the prompts and the guide [here](https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html). When selecting sources, note that this provides a selection of sources that can be used when creating a custom dictionary. For example, if you select RXNorm and SNOMEDCT_US as sources, then when creating the custom dictionary in step 5, you will have the option of using SNOMEDCT_US only, RXNorm only, or both RXNorm and SNOMEDCT_US in the custom dictionary.
-5. Run *./bin/runDictionaryCreator.sh* to [create the custom dictionary](https://cwiki.apache.org/confluence/display/CTAKES/Dictionary+Creator+GUI)
+4. Configure a custom dictionary following the prompts and the guide [here](https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html). When selecting sources (see Select Default Subset image below), note that this provides a selection of sources that can be used when creating a custom dictionary. For example, if you select RXNorm and SNOMEDCT_US as sources, then when creating the custom dictionary in step 6, you will have the option of using SNOMEDCT_US only, RXNorm only, or both RXNorm and SNOMEDCT_US in the custom dictionary.
+
+###### Default Subset
+![](media/dict_create_img1.png)
+
+5. When finished with step 4, select "Begin Subset" (see Start Configuration image below)
+
+###### Start Configuration
+![](media/dict_create_img2.png)
+
+6. Run *./bin/runDictionaryCreator.sh* to [create the custom dictionary](https://cwiki.apache.org/confluence/display/CTAKES/Dictionary+Creator+GUI).
+
+###### runDictionaryCreator
+![](media/updated_cTAKES_writeup_img1.png)
+
+Images for generating a custom dictionary using cTAKES 4.0.0.1 and cTAKES 5.0 are both shown below. 
+
+###### cTAKES 4.0.0.1 Build Dictionary
+![](media/updated_cTAKES_writeup_img2.png)
+
+###### cTAKES 5.0 Build Dictionary
+![](media/updated_cTAKES_writeup_img4.png)
+
+Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed in the rightmost pane.
+
+7. Finally, within the cTAKES installation, you need to update the XML properties file to hold your username and API key. This is usually at `resources/org/apache/ctakes/dictionary/lookup/fast/`
+
+###### Modify the XML Properties File snomedonly.xml
+![](media/updated_cTAKES_writeup_img5.png)
+
+###### 
 
 ### Notes and Comments for Dictionary Creation
-1. Steps 1-4 above did not work on our lab servers running Centos 7. My speculation is there was a problem/conflict with X11, but it worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel x86_64 chipset. After completing steps 1-4 above on Windows or MacOSX, the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
-2. If you do not follow step 2 above exactly, the MetamorphoSys App will not be able to locate the required UMLS files.
-3. If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US".
-4. To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
+* Steps 1-4 above did not work on our lab servers running Centos 7 Linux. My speculation is there was a problem/conflict with X11, but the steps worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel x86_64 chipset. After completing steps 1-4 above on Windows or MacOSX, the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
+* If you do not follow step 2 above exactly, the MetamorphoSys App will not be able to locate the required UMLS files.
+* If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US". In Step 5, you select only the SNOMEDCT_US vocabulary to use in the final custom dictionary that cTAKES will use.
+* To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
 
 #### Image 1: Example subset selection
 ![](media/dict_create_img1.png)
