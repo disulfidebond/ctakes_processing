@@ -99,25 +99,31 @@ Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKE
 
 ![](media/cTAKES_preprocessing.png)
 
-It is very important for the input cTAKES file(s) to have a header and values for the DocumentID, the Patient ID, the Encounter ID, the Document Type, and a Timestamp. Note that at a minimum, the file(s) must have a unique value for the Patient ID and the Encounter ID. See the postprocessing section for more information about this.
+You may wish to clip the header from each file to ensure cTAKES does not assign CUIs to the header. 
+
+Additionally, run [this script]() to generate a manifest of all headers mapping to each input file.
 
 # Run cTAKES
-cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. An example of single file processing is in the [run_ctakes.singleFile.sh](code/run_ctakes.singleFile.sh) bash script, and the parallel_example is in the script [parallel_example.sh](code/parallel_example.sh), which takes as input a list of files to process, and outputs this list to an designated output directory.
-
-First, run [setup_cTAKES.sh](code/setup_cTAKES.sh) to create cTAKES instances, and update the [parallel_example.sh](code/parallel_example.sh) file to contain the correct input, output, and the correct number of cTAKES instances that match your system needs. Do not start more than `n/2` instances of cTAKES, where `n` is the total number of CPU cores available. 
-
-Within either bash script, the runPiperFile.mod.sh is a modified script that points to the correct Java, a modified piper file, and a custom dictionary. Another option is to simply use the default dictionary.
-
-It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
+cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. 
 
 ![](media/cTAKES_running.png)
 ![](media/cTAKES_details.png)
 
+A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py)) that uses the Multiprocessing library does this for you. It requires as input:
+
+* -i for the name of the input directory of notes files
+
+Optional input arguments are:
+* --splitCount for the number of files to process per instance [5000]
+* -- instanceLimit for the number of parallel workers to start [10]
+
+The output will be directories with the naming scheme `ctakes_x_runInstance` where x is the cTAKES version being run. Each directory will have log files and an outputDir directory containing gz-compressed XMI files.
+
+If the worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
+
+
 ## Additional General Notes
-* It is **strongly** recommended to use the [gzipFiles.sh](/code/gzipFiles.sh) script (or write a custom one) to compress output XMI files, both because the subsequent step assumes the input will be gzip-compressed, and because XMI files can take up exponentially more storage space than their input file counterparts.
-* Following the preprocessing steps listed above, the medical notes were ready for the processing and analysis steps in the cTAKES overview. There is an exponential increase in processing time versus file size, so it is very important to split input files by size.
 * The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
-* There is a [beta version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) of running parallel instances of cTAKES using python instead of Bash/Terminal. Briefly, this will scan a directory of files, split the data into subsets, then for each instance of cTAKES, it will run cTAKES and then create a tar.gz of the input and output directories.
 
 # Postprocessing Steps
 
