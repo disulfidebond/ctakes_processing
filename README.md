@@ -71,15 +71,15 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
     ./bin/runPiperFile.sh -p resources/org/apache/ctakes/clinical/pipeline/DefaultFastPipeline.piper -l resources/org/apache/ctakes/dictionary/lookup/fast/CUSTOMNAME.xml -i inputDir --xmiOut outputDir &>> ctakes_${TSTRING}_log.txt
 
 ### General Notes and Comments for Dictionary Creation
-* Steps 1-4 above did not work on our lab servers running Centos 7 Linux. My speculation is there was a problem/conflict with X11, but the steps worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel x86_64 chipset. After completing steps 1-4 above on Windows or MacOSX, the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
+* Steps 1-4 above did not work on our lab servers running Centos 7 Linux. My speculation is there was a problem/conflict with X11, but the steps worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel x86_64 chipset. After completing steps 1-4 above on Windows or MacOSX, the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 6 above.
 * If you do not follow step 2 above exactly, the MetamorphoSys App will not be able to locate the required UMLS files.
-* If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US". In Step 5, you select only the SNOMEDCT_US vocabulary to use in the final custom dictionary that cTAKES will use.
-* To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
+* If you are not certain which subset to use, [then select](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#default-subset) "Level 0 + SNOMEDCT_US". In Step 6, you will select only the SNOMEDCT_US vocabulary to use in the final custom dictionary that cTAKES will use.
+* To start the configuration in [step 5](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#start-configuration), you need to click the "Done" menu then select "Begin Subset".
 
 # Preprocess Notes
 * First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
 
-* Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKES.Notes.getFileSizes.v3.py) to generate a file list with file sizes, and run [parseEntries.cTAKES.Notes.sortBySize.v3.py](code/parseEntries.cTAKES.Notes.sortBySize.v3.py) to sort the files by size. You may wish to clip the header from each file to ensure cTAKES does not assign CUIs to the header. 
+* Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKES.Notes.getFileSizes.v3.py) to generate a file list with file sizes, and run [parseEntries.cTAKES.Notes.sortBySize.v3.py](code/parseEntries.cTAKES.Notes.sortBySize.v3.py) to sort the files by size. You may wish to clip the header from each note file to ensure cTAKES does not assign CUIs from the headers. 
 
 ![](media/cTAKES_preprocessing.png)
 
