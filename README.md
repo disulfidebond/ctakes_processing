@@ -16,23 +16,7 @@ The most recent version of cTAKES is cTAKES 5.0, which is the recommended versio
 
 Alternatively, you can use the User Installation of cTAKES 4.0.0.1, which is available for download [here](https://ctakes.apache.org), and has installation instructions [here](https://cwiki.apache.org/confluence/display/CTAKES/cTAKES+4.0+User+Install+Guide). 
 
-# Steps to create a custom dictionary with the SNOMEDCT_US vocabulary
-1. Download dictionary from UMLS at https://www.nlm.nih.gov/research/umls/licensedcontent/umlsknowledgesources.html , note this requires authentication using the UMLS Terminology Services account you created previously to download the file.
-2. Unzip the `mmsys.zip` file, and copy the compressed contents **to the same directory where the \*.nlm files reside** (this is usually the parent directory)
-3. Run the *run_mac.sh* file to launch MetamorphoSys on MacOSX, or the *run.bat* file on Windows.
-4. Configure a custom dictionary following the prompts and the guide [here](https://www.nlm.nih.gov/research/umls/implementation_resources/metamorphosys/help.html). When selecting sources, note that this provides a selection of sources that can be used when creating a custom dictionary. For example, if you select RXNorm and SNOMEDCT_US as sources, then when creating the custom dictionary in step 5, you will have the option of using SNOMEDCT_US only, RXNorm only, or both RXNorm and SNOMEDCT_US in the custom dictionary.
-
-
-Requirements for running cTAKES, note that CUI extraction (see below) has different requirements that depend on how it is run:
-
-- cTAKES 4.0.0.1 installed
-- custom NLM Library installed 
-- python 3.6+ installed
-
-## Initial Comments
 cTAKES processing requires an NLM library. This can be either a local custom library, or the library online. In both cases, it is required that your workflow authenticates to the NLM, even if you are using a local library. If you need to run cTAKES in an environment that is completely isolated from the Internet, then contact Sean Finan on the cTAKES dev team for assistance.
-
-There are several versions of cTAKES available. This workflow uses cTAKES 4.0.0.1, and it has not been tested against other versions.
 
 In addition to cTAKES, you must have Java installed, and python 3.6+ installed. Although the documentation stated cTAKES is compatible with 
 Java 1.8+, we found Java 15 worked the best.
@@ -92,7 +76,7 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
 * If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US". In Step 5, you select only the SNOMEDCT_US vocabulary to use in the final custom dictionary that cTAKES will use.
 * To start the configuration in step 4, you need to click the "Done" menu then click "Begin Subset" (see image2 below)
 
-# Preprocessing
+# Preprocess Notes
 * First, run [parse_notes.py](code/parse_notes.py) to split the initial CSV file. Update the `NOTES_FILE=` variable with the correct file name, and update SPLIT_ID to contain a term that can be used to split the dataset into manageable sizes.
 
 * Then, run [parseEntries.cTAKES.Notes.getFileSizes.v3.py](code/parseEntries.cTAKES.Notes.getFileSizes.v3.py) to generate a file list with file sizes, and run [parseEntries.cTAKES.Notes.sortBySize.v3.py](code/parseEntries.cTAKES.Notes.sortBySize.v3.py) to sort the files by size. You may wish to clip the header from each file to ensure cTAKES does not assign CUIs to the header. 
@@ -122,7 +106,7 @@ If the worker encounters an error with cTAKES, it stops, creates a tar-gz of the
 ## Additional General Notes
 * The [preprocessing](code/preprocessing) directory contains code that was used to perform additional preprocessing on notes, and is provided as a code template for additional work that may be necessary.
 
-# Postprocessing Steps
+# Postprocess Notes
 
 ![Postprocessing Overview](media/postprocessing_overview.png)
 
