@@ -1,10 +1,10 @@
 # README
 
 Steps for generating flatfile output from clinical notes:
-1. Create custom dictionary using the SNOMEDCT_US vocabulary
-2. Preprocess notes to fit cTAKES requirements 
-3. Run cTAKES
-4. Postprocess notes to convert XMI output to flat text file
+1. [Create custom dictionary using the SNOMEDCT_US vocabulary](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#custom-ctakes-dictionary-creation)
+2. [Preprocess notes](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#preprocess-notes) to fit cTAKES requirements 
+3. [Run cTAKES](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#run-ctakes)
+4. [Postprocess notes](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#postprocess-notes) to convert XMI output to flat text file. If you want to see how to visualize the cTAKES XMI output, skip to [this section](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis)
 
 To run the steps above, you will need:
 - cTAKES 4.0.0.1 or higher downloaded and installed
@@ -90,7 +90,7 @@ cTAKES is atomic, and by itself cannot be parallelized. However, it is possible 
 ![](media/cTAKES_running.png)
 ![](media/cTAKES_details.png)
 
-A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py)) that uses the Multiprocessing library does this for you. It requires as input:
+A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) that uses the Multiprocessing library does this for you. It requires as input:
 
 * -i for the name of the input directory of notes files
 
@@ -98,9 +98,9 @@ Optional input arguments are:
 * --splitCount for the number of files to process per instance [5000]
 * -- instanceLimit for the number of parallel workers to start [10]
 
-The output will be directories with the naming scheme `ctakes_x_runInstance` where x is the cTAKES version being run. Each directory will have log files and an outputDir directory containing gz-compressed XMI files.
+The output will be directories with the naming scheme `ctakes_x_runInstance` where x is the cTAKES version being run. Each output directory from each worker will have log files and an `outputDir` directory containing gz-compressed XMI files.
 
-If the worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
+If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
 
 
 ## Additional General Notes
