@@ -18,7 +18,7 @@ Alternatively, you can use the User Installation of cTAKES 4.0.0.1, which is ava
 
 The documentation here provides instructions for how to modify your workflow if you are using cTAKES 5.0 or cTAKES 4.0.0.1, but generally speaking, the steps and code are compatible with both versions.
 
-cTAKES processing requires an dictionary, and it is required that your workflow authenticates to the NLM when cTAKES starts. If you need to run cTAKES in an environment that is completely isolated from the Internet, then contact Sean Finan on the cTAKES dev team for assistance.
+Running cTAKES requires a custom dictionary to be built ahead of time and copied into your cTAKES installtion, and it is required that your workflow authenticates to the NLM when cTAKES starts. If you need to run cTAKES in an environment that is completely isolated from the Internet, then contact Sean Finan on the cTAKES dev team for assistance.
 
 Unless you are building/compiling cTAKES 5.0, we found that using the Java 15 SDK worked the best when running cTAKES, but YMMV.
 
