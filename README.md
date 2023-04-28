@@ -66,14 +66,27 @@ Images for generating a custom dictionary using cTAKES 4.0.0.1 and cTAKES 5.0 ar
 
 Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed in the rightmost pane.
 
-7. Finally, within the cTAKES installation, you need to update the XML properties file to hold your username and API key. This is usually at `resources/org/apache/ctakes/dictionary/lookup/fast/`
+7. Next, within the cTAKES installation, you need to update the XML properties file to hold your username and API key. This is usually at `resources/org/apache/ctakes/dictionary/lookup/fast/`
 
 ###### Modify the XML Properties File snomedonly.xml
 ![](media/updated_cTAKES_writeup_img5.png)
 
-###### 
+8. Finally, modify the Piper file at `resources/org/apache/ctakes/clinical/pipeline/DefaultFastPipeline.piper` and the bash runFile `runCTAKES.sh` to point both to the custom dictionary.
 
-### Notes and Comments for Dictionary Creation
+###### If you are running cTAKES 4.0.0.1, ensure the piper file DefaultFastPipeline.piper looks like this:
+
+![](media/updated_cTAKES_writeip_img7.png)
+
+###### If you are running cTAKES 5.0, ensure the piper file DefaultFastPipeline.piper looks like this:
+
+![](media/updated_cTAKES_writeup_img6.png)
+
+###### update runCTAKES.sh file in this repo, replace CUSTOMNAME with the name of the custom dictionary you just created
+
+    # code
+    ./bin/runPiperFile.sh -p resources/org/apache/ctakes/clinical/pipeline/DefaultFastPipeline.piper -l resources/org/apache/ctakes/dictionary/lookup/fast/CUSTOMNAME.xml -i inputDir --xmiOut outputDir &>> ctakes_${TSTRING}_log.txt
+
+### General Notes and Comments for Dictionary Creation
 * Steps 1-4 above did not work on our lab servers running Centos 7 Linux. My speculation is there was a problem/conflict with X11, but the steps worked without problems on Mac OSX 10.15.7, Mac OSX 13.1, and Windows Server 2019, which all used an Intel x86_64 chipset. After completing steps 1-4 above on Windows or MacOSX, the configured UMLS installation can be copied to the appropriate computer if necessary to finish installation and setup of the Custom Dictionary in step 5 above.
 * If you do not follow step 2 above exactly, the MetamorphoSys App will not be able to locate the required UMLS files.
 * If you are not certain which subset to use (see image 1 below), then select "Level 0 + SNOMEDCT_US". In Step 5, you select only the SNOMEDCT_US vocabulary to use in the final custom dictionary that cTAKES will use.
