@@ -5,7 +5,7 @@ Steps for generating flatfile output from clinical notes:
 2. [Preprocess notes](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#preprocess-notes) to fit cTAKES requirements 
 3. [Run cTAKES](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#run-ctakes)
 4. [Postprocess notes](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#postprocess-notes) to convert XMI output to flat text file. If you want to see how to visualize the cTAKES XMI output, skip to [this section](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#visualizing-cuis)
-5. [Frequently Asked Questions (FAQ)](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/xml_cleaner.directory.py)
+5. [Frequently Asked Questions (FAQ)](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#faq)
 
 To run the steps above, you will need:
 - cTAKES 4.0.0.1 or higher downloaded and installed
