@@ -17,12 +17,15 @@ parser.add_argument('--infile', '-i', help='filename for input CSV notes file to
 parser.add_argument('--outfile', '-o', help='filename of output cleaned file', required=True)
 args = parser.parse_args()
 
-all_chars = (chr(i) for i in range(sys.maxunicode))
-categories = {'Cc'}
-control_chars = ''.join(map(chr, itertools.chain(range(0x00,0x20),range(0x7f,0xa0))))
-control_char_re = re.compile('[%s]' % re.escape(control_chars))
-def remove_control_chars(s, control_chars=control_chars, control_char_re=control_char_re):
-    return control_char_re.sub('', s)
+def remove_control_chars(s):
+    all_chars = (chr(i) for i in range(sys.maxunicode))
+    categories = {'Cc'}
+    control_chars = ''.join(map(chr, itertools.chain(range(0x00,0x20),range(0x7f,0xa0))))
+    try:
+        control_char_re = re.compile('[%s]' % re.escape(control_chars))
+        return control_char_re.sub('', s)
+    except TypeError:
+        return s
 
 l = []
 with open(args.infile) as fOpen:
