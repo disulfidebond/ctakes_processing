@@ -17,15 +17,21 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--inputDir', '-i', help='FULL PATH of the input directory of notes', required=True)
 parser.add_argument('--splitCount', '-c', type=int, help='number of files per cTAKES instance', const=5000, default=5000, nargs='?')
 parser.add_argument('--instanceLimit', '-l', type=int, help='number of concurrent cTAKES instances to run', const=10, default=10, nargs='?')
+parser.add_argument('--templateDir', '-t', type=str, help='name of the directory containing cTAKES that will be copied to each worker node', required=True)
 args = parser.parse_args()
 
 # IMPORTANT NOTES (DO NOT SKIP THIS SECTION)
 '''
-0. this should be considered beta software
-1. the ctakes directory that will be copied to each worker must be named 'ctakes_4.0.0.1_template_runInstance'
-2. the bash script runCTAKES.sh must be in the same directory as this script
-3. you need to manually copy out the results from each output directory
+1. the bash script runCTAKES.sh must be in the same directory as this script
+2. you need to manually copy out the results from each output directory
 '''
+
+# setup
+if not os.path.isdir(str(args.templateDir)):
+    print('Error, the provided directory for --templateDir ' + str(args.templateDir) + ' does not exist, or has a typo')
+    print('Please check the name and try again')
+    print('Exiting now...')
+    sys.exit()
 
 inputDir = args.inputDir
 gString = inputDir + '/*.csv'
@@ -46,9 +52,9 @@ def parallelParse(t):
     tstamp = datetime.now()
     ts_string = tstamp.strftime('%m%d%Y_%H%M%S')
     instanceNum = t[0]
-    runDirName = ts_string + '.ctakes_4.0.0.1_runInstance_' + str(instanceNum)
+    runDirName = 'run_instance.' + ts_string + '.' + str(args.templateDir) + '_' + str(instanceNum)
     # create unique run directory
-    srcDir = os.getcwd() + '/' + 'ctakes_4.0.0.1_template_runInstance'
+    srcDir = os.getcwd() + '/' + str(args.templateDir)
     destDir = os.getcwd() + '/' + runDirName
     shutil.copytree(srcDir, destDir)
     logName = 'ctakes_pyrunLog.' + ts_string + '.txt'
@@ -94,6 +100,7 @@ def parallelParse(t):
                 Path(f).unlink()
             with open(logName, 'a') as fWrite:
                 fWrite.write('Finished compressing and deleting output XMI files from timestamp ' + str(ts_string) + '\n')
+        runDirName = ''
     else:
         with open(logName, 'a') as fWrite:
             runDirError = runDirName + '.' + ts_string + '.error.tar.gz'
@@ -116,6 +123,7 @@ def parallelParse(t):
     # return to parent directory to reset
     time.sleep(2)
     os.chdir(rootDir)
+    return runDirName
 
 tupleList = []
 ct = 0
@@ -143,10 +151,21 @@ if len(inFileList) != v_ct:
 else:
     print('Passed counts validation.')
 
+errList = []
 print('Now starting parallel cTAKES processing.')
 with Pool(processes=instanceLimit) as p:
     maxCt = len(tupleList)
     with tqdm(total=maxCt) as pbar:
         for i,j in enumerate(p.imap_unordered(parallelParse, tupleList)):
             pbar.update()
+            errList.append(j)
 
+print('Now checking for reported errors...')
+detectedErrors = [x for x in errList if x]
+if detectedErrors:
+    print('WARNING! Errors were detected in the following run instances:')
+    for i in detectedErrors:
+        print(i)
+else:
+    print('No errors detected.')
+print('work complete')
