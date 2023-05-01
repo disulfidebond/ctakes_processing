@@ -93,15 +93,16 @@ cTAKES is atomic, and by itself cannot be parallelized. However, it is possible 
 ![](media/cTAKES_running_revised.png)
 ![](media/cTAKES_details.png)
 
-A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) that uses the Multiprocessing library does this for you. It requires as input:
+A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) that uses the Multiprocessing library does this for you. It requires as arguments:
 
 * `-i` for the name of the input directory of notes files
+* `-t` for the name of the cTAKES installation directory that will be copied to each worker
 
 Optional input arguments are:
 * `--splitCount` for the number of files to process per instance [5000]
 * `--instanceLimit` for the number of parallel workers to start [10]
 
-The output will be directories with the naming scheme `ctakes_x_runInstance` where x is the cTAKES version being run. Each output directory from each worker will have log files and an `outputDir` directory containing gz-compressed XMI files.
+The output will be directories with the naming scheme `runInstance_x_INT` where x is the name of the cTAKES installation directory provided with the `-t` argument, and `INT` is an integer starting at 0. Each output directory from each worker will have log files and an `outputDir` directory containing gz-compressed XMI files.
 
 If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
 
