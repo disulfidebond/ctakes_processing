@@ -90,7 +90,7 @@ Critically, be certain that only SNOMEDCT_US is selected, and nothing is changed
 # Run cTAKES
 cTAKES is atomic, and by itself cannot be parallelized. However, it is possible to start multiple instances of cTAKES processing. 
 
-![](media/cTAKES_running.png)
+![](media/cTAKES_running_revised.png)
 ![](media/cTAKES_details.png)
 
 A [parallel processing python script](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/parallel_process_cTAKES.py) that uses the Multiprocessing library does this for you. It requires as input:
@@ -104,6 +104,8 @@ Optional input arguments are:
 The output will be directories with the naming scheme `ctakes_x_runInstance` where x is the cTAKES version being run. Each output directory from each worker will have log files and an `outputDir` directory containing gz-compressed XMI files.
 
 If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
+
+For more information on this and using the XML cleaners, see the [FAQ]().
 
 The code for running cTAKES can be used with cTAKES 4.0.0.1 and cTAKES 5.0 interchangeably, but be certain the piper file is formatted correctly.
 
