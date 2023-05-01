@@ -105,9 +105,9 @@ The output will be directories with the naming scheme `ctakes_x_runInstance` whe
 
 If a worker encounters an error with cTAKES, it stops, creates a tar-gz of the input and output directories, and then proceeds to the next batch of input files.
 
-For more information on this and using the XML cleaners, see the [FAQ]().
-
 The code for running cTAKES can be used with cTAKES 4.0.0.1 and cTAKES 5.0 interchangeably, but be certain the piper file is formatted correctly.
+
+For more information on this and using the XML cleaners, see the [FAQ](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/README.md#faq).
 
 After all cTAKES processing has completed, you can copy the compressed XMI output files from each directory with a command similar to:
 
