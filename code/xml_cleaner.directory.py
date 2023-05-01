@@ -38,12 +38,15 @@ if os.path.isdir(str(args.outDir)):
 
 Path(str(args.outDir)).mkdir(parents=True, exist_ok=True)
 
-all_chars = (chr(i) for i in range(sys.maxunicode))
-categories = {'Cc'}
-control_chars = ''.join(map(chr, itertools.chain(range(0x00,0x20),range(0x7f,0xa0))))
-control_char_re = re.compile('[%s]' % re.escape(control_chars))
-def remove_control_chars(s, control_chars=control_chars, control_char_re=control_char_re):
-    return control_char_re.sub('', s)
+def remove_control_chars(s):
+    all_chars = (chr(i) for i in range(sys.maxunicode))
+    categories = {'Cc'}
+    control_chars = ''.join(map(chr, itertools.chain(range(0x00,0x20),range(0x7f,0xa0))))
+    try:
+        control_char_re = re.compile('[%s]' % re.escape(control_chars))
+        return control_char_re.sub('', s)
+    except TypeError:
+        return s
 # end setup
 
 gString = str(args.inDir) + '/' + '*.csv'
