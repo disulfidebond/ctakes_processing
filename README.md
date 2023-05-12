@@ -271,7 +271,10 @@ Requirements:
 1. Launch IntelliJIDEA 
 2. Select `File -> New Project from Version Control`, then enter the GitHub clone URL.
 3. Select `View -> Tool Windows -> Maven` to bring up the Maven interface.
-4. Ensure that the profiles `disable-java8-doclint` and `zips-build` are enabled (see [Image 1](media/Screenshot_2023-04-19_at_10.37.49_AM.png) below). This should be the default.
+4. Ensure that the profiles `disable-java8-doclint` and `zips-build` are enabled (see Image1 below). This should be the default.
+
+![Image 1](media/Screenshot_2023-04-19_at_10.37.49_AM.png)
+
 5. `View -> Tool Windows -> Maven: select Lifecycle -> right click clean`, select run ctakes[clean]
 6. Select Lifecycle-> right click compile, select `run ctakes[compile]`
   * Note: if it throws the error `package jdk.nashorn.internal.ir.annotations does not exist`, then ensure Java 1.8 SDK is being used for the project under `File -> Project Structure`, then repeat steps 4 and 5
