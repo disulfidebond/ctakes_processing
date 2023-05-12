@@ -276,7 +276,7 @@ Requirements:
 6. Select Lifecycle-> right click compile, select `run ctakes[compile]`
   * Note: if it throws the error `package jdk.nashorn.internal.ir.annotations does not exist`, then ensure Java 1.8 SDK is being used for the project under `File -> Project Structure`, then repeat steps 4 and 5
 7. Select Lifecycle-> right click install, then select `run ctakes[install]`
-  * Note1: if it throws an error similar to `group id '896530319' is too big ( > 2097151 ). Use STAR or POSIX extensions to overcome this limit`, modify the `<tarLongFileMode>gnu</tarLongFileMode>` to read `<tarLongFileMode>posix</tarLongFileMode>` within the configuration tag and after the descriptors tag, within the ctakes-distribution `pom.xml` file. Then, rerun steps 5-7.
+  * Note1: if it throws an error similar to `group id '896530319' is too big ( > 2097151 ). Use STAR or POSIX extensions to overcome this limit`, locate the ctakes-distribution `pom.xml` file, then modify the `<tarLongFileMode>gnu</tarLongFileMode>` to read `<tarLongFileMode>posix</tarLongFileMode>` within the configuration tag and after the descriptors tag. Then, rerun steps 5-7.
 8. The output from step 7 is in the `ctakes-distribution` folder. You want the zip or tar.gz compressed files that end in `-bin`
 
 ![](media/updated_cTAKES_writeup_img8.png)
