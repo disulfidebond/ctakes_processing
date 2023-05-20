@@ -65,6 +65,7 @@ else:
 
 # import CUIs as list then concatenate
 dfList = []
+df_cuis = []
 gPath = str(inputDir + '/*.txt')
 fList = glob.glob(gPath)
 for f in fList:
