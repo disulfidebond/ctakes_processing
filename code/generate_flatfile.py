@@ -25,7 +25,6 @@ parser.add_argument('--inputCSV', '-i', help="input CSV file of extracted data",
 parser.add_argument('--inputDir', '-d', help="input directory containing parsed CUI text files", required=True)
 parser.add_argument('--outputFileName', '-o', help="output file name for flatfile", required=True)
 parser.add_argument('--setCSVkey', '-k', help='value for the column of unique keys in the input CSV file', default="FileID", nargs='?', const="FileID")
-parser.add_argument('--fileIDsuffix', '-f', help='file suffix for file IDs in the FileID column', default='csv', nargs='?', const='csv')
 args = parser.parse_args()
 
 csvKeyBool = False
@@ -130,10 +129,6 @@ if len(checkedList) != len(checkFileID):
     dataCSV['FileID'] = updatedList
     dataCSV = dataCSV.copy()
     dataCSV = dataCSV.drop(columns=['RENAMETHENDELETE'])
-
-# DEBUG STEP
-dataCSV = dataCSV.rename(columns={'PSEUDO_PAT_ID' : 'PatientID', 'NOTE_LAST_FILE_TIME' : 'TimeStamp', 'NOTE_TYPE' : 'NoteType', 'PSEUDO_PAT_ENC_CSN_ID' : 'EncounterID'})
-# END DEBUG STEP
 
 print('Now merging data to create final output file.')
 # merge data and reorder cols
