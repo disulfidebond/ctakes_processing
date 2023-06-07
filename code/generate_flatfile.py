@@ -24,7 +24,15 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--inputCSV', '-i', help="input CSV file of extracted data", required=True)
 parser.add_argument('--inputDir', '-d', help="input directory containing parsed CUI text files", required=True)
 parser.add_argument('--outputFileName', '-o', help="output file name for flatfile", required=True)
+parser.add_argument('--setCSVkey', '-k', help='value for the column of unique keys in the input CSV file', default="FileID", nargs='?', const="FileID")
+parser.add_argument('--fileIDsuffix', '-f', help='file suffix for file IDs in the FileID column', default='csv', nargs='?', const='csv')
 args = parser.parse_args()
+
+csvKeyBool = False
+csvKey = None
+if args.setCSVkey != 'FileID':
+    csvKey = str(args.setCSVkey)
+    csvKeyBool = True
 
 # functions
 def conv_to_flatfile(df,outFileName=''):
@@ -65,24 +73,80 @@ else:
 
 # import CUIs as list then concatenate
 dfList = []
-df_cuis = []
 gPath = str(inputDir + '/*.txt')
 fList = glob.glob(gPath)
-for f in fList:
+print('importing CUI files')
+for f in tqdm(fList):
     fName = f.split('.')[0]
     fName = fName.split('/')[-1]
     # CUI,PreferredText,DomainCode,Start,End
-    df = pd.read_csv(f, header=None, names=['CUI','PreferredText','DomainCode','OffsetStart','OffsetStop'])
-    df['FileID'] = fName
+    df = pd.read_csv(f, header=None, names=['FileID', 'CUI','DomainCode','PreferredText','OffsetStart','OffsetStop'], sep='|')
     dfList.append(df)
-df_cuis = pd.concat(df_cuis)
+df_cuis = pd.concat(dfList)
 
 # import data CSV
+print('importing inputCSV file')
 dataCSV = pd.read_csv(inputCSV)
+checkCols = list(dataCSV)
 
+print('Now validating input CSV file.')
+if csvKeyBool:
+    if csvKey not in checkCols:
+        if 'FileID' in checkCols:
+            print('WARNING, the column name you provided for --setCSVkey does not exist,')
+            print('but the column FileID exists in the input CSV file.')
+            print('Using the column FileID in the inputCSV file\ninstead as the key for the union of the two datasets')
+        else:
+            print('Error, the column name you provided for --setCSVkey ' + str(csvKey) + '\ndoes not exist in the input CSV file,\nand there is no column named FileID.')
+            print('Exiting now.')
+            sys.exit()
+    else:
+        if 'FileID' in checkCols:
+            print('Error, you provided a value for --setCSVkey but a column\nwith the name FileID\nalready exists in the input CSV file.')
+            print('\nPlease check the input CSV file columns and ensure that\neither there is a column named FileID,\nor no column named FileID exists and you provide a value for --setCSVkey')
+            print('Exiting now.')
+            sys.exit()
+        else:
+            print('Using ' + str(csvKey) + ' as the unique key for the union of the two datasets')
+            dataCSV = dataCSV.rename(columns={csvKey : 'FileID'})
+
+# additional checks to ensure FileID matches in both datasets
+checkFileID = dataCSV['FileID'].tolist()
+cuiList = df_cuis['FileID'].tolist()
+cuiList = list(set(cuiList))
+cuiList = [str(x) for x in cuiList]
+parsed = [x.split('.')[-1] for x in cuiList]
+parsed = list(set(parsed))
+if len(parsed) != 1:
+    print('Error, different filename suffixes detected\nin CUI files. Exiting now.')
+    sys.exit()
+fSuffix = '.'+parsed[0]
+
+checkFileID = [str(x) for x in checkFileID]
+checkedList = list(filter(lambda x: x.endswith(fSuffix),checkFileID))
+if len(checkedList) != len(checkFileID):
+    updatedList = [str(x)+str(fSuffix) for x in checkFileID]
+    dataCSV = dataCSV.rename(columns={'FileID' : 'RENAMETHENDELETE'})
+    dataCSV['FileID'] = updatedList
+    dataCSV = dataCSV.copy()
+    dataCSV = dataCSV.drop(columns=['RENAMETHENDELETE'])
+
+# DEBUG STEP
+dataCSV = dataCSV.rename(columns={'PSEUDO_PAT_ID' : 'PatientID', 'NOTE_LAST_FILE_TIME' : 'TimeStamp', 'NOTE_TYPE' : 'NoteType', 'PSEUDO_PAT_ENC_CSN_ID' : 'EncounterID'})
+# END DEBUG STEP
+
+print('Now merging data to create final output file.')
 # merge data and reorder cols
-df_final = pd.merge(df_cuis, dataCSV, how="inner", on="FileID")
+df_final = None
+try:
+    df_final = pd.merge(df_cuis, dataCSV, how="inner", on='FileID')
+except KeyError:
+    print('Error, column FileID not found in the inputCSV file.\nPlease make sure there is a column\nwith unique values named FileID in the inputCSV file,\nor you provide an argument for --setCSVkey')
+    print('Exiting now.')
+    sys.exit()
 df_final["Polarity"] = ''
 df_final = df_final[["FileID","NoteType","PatientID","EncounterID","TimeStamp","CUI","PreferredText","OffsetStart","OffsetStop","DomainCode","Polarity"]]
 df_final = df_final.copy()
-conv_to_flatfile(df_final, args.outputFileName)
+df_final.to_csv(args.outputFileName, index=False, sep='|')
+# conv_to_flatfile(df_final, args.outputFileName)
+print('job done')
