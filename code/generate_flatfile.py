@@ -83,6 +83,6 @@ dataCSV = pd.read_csv(inputCSV)
 # merge data and reorder cols
 df_final = pd.merge(df_cuis, dataCSV, how="inner", on="FileID")
 df_final["Polarity"] = ''
-df_final = df_final[["FileID","NoteType","PatientID","EncounterID","TimeStamp","CUI","PreferredText","OffsetStart","OffsetStop","DomainCode","Polarity"]
+df_final = df_final[["FileID","NoteType","PatientID","EncounterID","TimeStamp","CUI","PreferredText","OffsetStart","OffsetStop","DomainCode","Polarity"]]
 df_final = df_final.copy()
 conv_to_flatfile(df_final, args.outputFileName)
