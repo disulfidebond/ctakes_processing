@@ -33,23 +33,6 @@ if args.setCSVkey != 'FileID':
     csvKey = str(args.setCSVkey)
     csvKeyBool = True
 
-# functions
-def conv_to_flatfile(df,outFileName=''):
-    colNames = list(df)
-    cols = [df[x].tolist() for x in df]
-    stopIdx = len(df.index)
-    if not outFileName:
-        print('Error, output file name must be provided')
-        return None
-    with open(outFileName, 'w') as fWrite:
-        fWrite.write('FileID||NoteType||PatientID||EncounterID||TimeStamp||CUI||PreferredText||OffsetStart||OffsetStop||DomainCode||Polarity\n')
-        for idx in range(0, stopIdx):
-            s = ''
-            for i in range(0, len(cols)-1):
-                s = s + str(cols[i][idx]) + '||'
-            fWrite.write(s+'\n')
-    print('created output flatfile named ' + str(outFileName))
-
 # helper section
 inputDir = None
 checkInput = Path(args.inputDir)
@@ -130,6 +113,10 @@ if len(checkedList) != len(checkFileID):
     dataCSV = dataCSV.copy()
     dataCSV = dataCSV.drop(columns=['RENAMETHENDELETE'])
 
+# DEBUG STEP
+dataCSV = dataCSV.rename(columns={'PSEUDO_PAT_ID' : 'PatientID', 'NOTE_LAST_FILE_TIME' : 'TimeStamp', 'NOTE_TYPE' : 'NoteType', 'PSEUDO_PAT_ENC_CSN_ID' : 'EncounterID'})
+# END DEBUG STEP
+
 print('Now merging data to create final output file.')
 # merge data and reorder cols
 df_final = None
@@ -143,5 +130,4 @@ df_final["Polarity"] = ''
 df_final = df_final[["FileID","NoteType","PatientID","EncounterID","TimeStamp","CUI","PreferredText","OffsetStart","OffsetStop","DomainCode","Polarity"]]
 df_final = df_final.copy()
 df_final.to_csv(args.outputFileName, index=False, sep='|')
-# conv_to_flatfile(df_final, args.outputFileName)
 print('job done')
