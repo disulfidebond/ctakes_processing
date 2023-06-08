@@ -64,6 +64,10 @@ for f in tqdm(fList):
     # CUI,PreferredText,DomainCode,Start,End
     df = pd.read_csv(f, header=None, names=['FileID', 'CUI','DomainCode','PreferredText','OffsetStart','OffsetStop'], sep='|')
     dfList.append(df)
+if len(dfList) == 0:
+    print('\nError, the script was unable to locate any CUI files\nin the directory you provided.\nPlease check that location, and ensure that\nall of the CUI files end in .txt')
+    print('Exiting now.')
+    sys.exit()
 df_cuis = pd.concat(dfList)
 
 # import data CSV
