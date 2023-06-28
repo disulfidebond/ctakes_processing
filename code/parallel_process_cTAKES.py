@@ -37,6 +37,9 @@ inputDir = args.inputDir
 gString = inputDir + '/*.csv'
 print('gathering list of all input files at ' + str(inputDir))
 inFileList = glob.glob(gString)
+if len(inFileList) == 0:
+    print('Error, no input files ending in .csv detected, exiting now...')
+    sys.exit()
 splitCount = args.splitCount # number of files per instance
 instanceLimit = args.instanceLimit # 0-indexed count of simultaneous run instances
 
