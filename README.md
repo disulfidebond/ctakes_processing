@@ -143,7 +143,7 @@ The output will be a `|` delimited list (minus the headers shown) of
 
     FileName|CUI|OriginalText|DomainCode|PreferredText|Start|Stop
 
-Additionally, a [parallelized version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) of the python-based CUI extraction step is available, with similar usage as shown above. The only difference is the parallelized version is intended to process large numbers of files using the Multiprocessing python library, and by default each worker node will no longer output a flatfile in addition to the final output file.
+Additionally, a [parallelized version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) of the python-based CUI extraction step is available, with similar usage as shown above. The differences are the parallelized version is intended to process large numbers of files using the Multiprocessing python library, by default each worker node will no longer output a flatfile in addition to the final output file, and the process_xmis_parallel.py **requires the input be gzip-compressed**.
 
 
 ## Step 2: Data Extraction
