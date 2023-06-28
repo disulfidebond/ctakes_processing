@@ -205,6 +205,9 @@ def main():
   stepInt = countInt
   gString = str(xmi_dir) + '/*.xmi.gz'
   xmiFiles = glob.glob(gString)
+  if len(xmiFiles) == 0:
+    print('Error, no input files detected.\nPlease check the input directory ' + str(xmi_dir) + '\nand check that the input files are gz-compressed.\n\nExiting now...')
+    sys.exit()
   totalCount = len(xmiFiles)
   incrementInt = int(totalCount/countInt) - 1
   print(countInt)
