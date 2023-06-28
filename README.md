@@ -129,13 +129,15 @@ For information on visualizing CUIs, including tracking exactly what spans of te
 
 
 ## Step 1: CUI Extraction (Python-Based)
-The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) for CUI extraction is a pythonic implementation of the Java workflow. It requires the [dkpro-cassis library](https://pypi.org/project/dkpro-cassis/) to be installed via `pip`, and a TypeSystem.xml file that must be in the same directory as the python script
+The [python-based approach](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) for CUI extraction is a pythonic implementation of the Java workflow. It requires the [dkpro-cassis library](https://pypi.org/project/dkpro-cassis/) to be installed via `pip`, and a TypeSystem.xml file that must be in the same directory as the python script
 
 If possible, you should use the TypeSystem.xml file provided with your cTAKES installation, which is normally located at `resources/org/apache/ctakes/typesystem/types/TypeSystem.xml`, but if this file is not available, then one is [provided](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/TypeSystem.xml) in this repo.
 
 The usage is:
 
-    python process_xmi.py -i INPUT_DIRECTORY -x [True,False] -o OUTPUT_FILE_NAME
+    python process_xmis_parallel.py -i INPUT_DIRECTORY -x [True,False] -o OUTPUT_FILE_NAME
+
+**Important:** the files in `INPUT_DIRECTORY` must be gz-compressed!
 
 The `-x` option indicates if you would like to include the original text that was used to generate a CUI. **NOTE** That allowing the original text to be included as part of the output may expose PHI. If you are uncertain about what to do, then set this to `False`
 
@@ -143,7 +145,7 @@ The output will be a `|` delimited list (minus the headers shown) of
 
     FileName|CUI|OriginalText|DomainCode|PreferredText|Start|Stop
 
-Additionally, a [parallelized version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis_parallel.py) of the python-based CUI extraction step is available, with similar usage as shown above. The differences are the parallelized version is intended to process large numbers of files using the Multiprocessing python library, by default each worker node will no longer output a flatfile in addition to the final output file, and the process_xmis_parallel.py **requires the input be gzip-compressed**.
+Additionally, a [debug version](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/process_xmis.py) of the python-based CUI extraction step is available, with similar usage as shown above. The differences are the debug version is intended to process small numbers of files, the input files must be uncompressed, and by default each worker node will output a flatfile in addition to the final output file.
 
 
 ## Step 2: Data Extraction
