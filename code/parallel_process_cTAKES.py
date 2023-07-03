@@ -20,10 +20,15 @@ parser.add_argument('--instanceLimit', '-l', type=int, help='number of concurren
 parser.add_argument('--templateDir', '-t', type=str, help='name of the directory containing cTAKES that will be copied to each worker node', required=True)
 args = parser.parse_args()
 
-# IMPORTANT NOTES (DO NOT SKIP THIS SECTION)
 '''
-1. the bash script runCTAKES.sh must be in the same directory as this script
-2. you need to manually copy out the results from each output directory
+Requirements:
+1. Modify the runCTAKES.sh script as described in the documentation, then add it to the cTAKES template directory
+2. The name of the input directory of notes, all of which must end in *.csv
+3. The name of the cTAKES template directory
+
+Optional Arguments:
+1. set -c to an integer > 1 to specify how many notes will be copied to each cTAKES instance (default is 5000)
+2. set -l to an integer > 1 to specify the number of parallel cTAKES instances to run (default is 10), do not set this to a value higher than (total_CPU_cores/2)
 '''
 
 # setup
@@ -93,6 +98,7 @@ def parallelParse(t):
         gList = glob.glob(gString)
         if not gList:
             print('Warning, no XMI files detected at ' + str(gString))
+            print('Hint: Double check that you have correctly set the API parameters!')
             with open(logName, 'a') as fWrite:
                 fWrite.write('Warning, no XMI files detected at ' + str(gString) + '\n')
         else:
@@ -144,7 +150,6 @@ for i in tqdm(inFileList):
     idx += 1
 tupleList.append((ct, tmpList))
 
-# validation
 v_ct=0
 for i in tupleList:
     v_ct += len(i[1])
