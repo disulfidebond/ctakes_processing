@@ -14,10 +14,12 @@ import argparse
 
 # setup
 parser = argparse.ArgumentParser()
-parser.add_argument('--inputDir', '-i', help='FULL PATH of the input directory of notes', required=True)
+parser.add_argument('--inputDir', '-i', help='Name of the input directory of notes. Notes MUST end in .csv', required=True)
 parser.add_argument('--splitCount', '-c', type=int, help='number of files per cTAKES instance', const=5000, default=5000, nargs='?')
 parser.add_argument('--instanceLimit', '-l', type=int, help='number of concurrent cTAKES instances to run', const=10, default=10, nargs='?')
 parser.add_argument('--templateDir', '-t', type=str, help='name of the directory containing cTAKES that will be copied to each worker node', required=True)
+parser.add_argument('--outputDir', '-o', help='name of directory where output compressed XMI files will be copied to', required=True)
+parser.add_argument('--keepWorkDirs', choices=['True', 'False'], help='if set to True, output directories from each worker will be kept. Default is False', const='False', default='False', nargs='?')
 args = parser.parse_args()
 
 '''
@@ -25,6 +27,7 @@ Requirements:
 1. Modify the runCTAKES.sh script as described in the documentation, then add it to the cTAKES template directory
 2. The name of the input directory of notes, all of which must end in *.csv
 3. The name of the cTAKES template directory
+4. The name of the output directory where all xmi.gz files from cTAKES will be copied (this is required even if keepWorkDirs is set to True)
 
 Optional Arguments:
 1. set -c to an integer > 1 to specify how many notes will be copied to each cTAKES instance (default is 5000)
@@ -37,6 +40,26 @@ if not os.path.isdir(str(args.templateDir)):
     print('Please check the name and try again')
     print('Exiting now...')
     sys.exit()
+
+keepWorkDirBool = False
+if args.keepWorkDirs == 'True':
+    keepWorkDirBool = True
+
+outputDirName = 'NULL'
+logDirName = 'NULL'
+if not Path(args.outputDir).exists():
+    outputDirName = str(args.outputDir)
+else:
+    tstamp = datetime.now()
+    ts_string = tstamp.strftime('%m%d%Y_%H%M%S')
+    # Path('inputDir').mkdir(parents=True, exist_ok=True)
+    print('Error, the provided output directory name exists.\nAppending a timestamp to the provided directory name to prevent overwriting.')
+    outputDirName = str(args.outputDir) + ts_string
+tstamp = datetime.now()
+ts_logs = tstamp.strftime('%m%d%Y_%H%M%S')
+Path(outputDirName).mkdir(parents=True, exist_ok=True)    
+logDirName = str(outputDirName) + '_logFiles_' + ts_logs
+Path(logDirName).mkdir(parents=True, exist_ok=True)
 
 inputDir = args.inputDir
 gString = inputDir + '/*.csv'
@@ -56,7 +79,12 @@ def make_tarfile(output_filename, source_dir):
     with tarfile.open(output_filename, "w:gz") as tar:
         tar.add(source_dir, arcname=os.path.basename(source_dir))
 
+
 def parallelParse(t):
+    successBool = True
+    keepWorkDirBool = t[4]
+    outName = t[2] # outputDirName
+    logDirName = t[3]
     tstamp = datetime.now()
     ts_string = tstamp.strftime('%m%d%Y_%H%M%S')
     instanceNum = t[0]
@@ -93,10 +121,12 @@ def parallelParse(t):
         except FileNotFoundError:
             with open(logName, 'a') as fWrite:
                 fWrite.write('Warning, inputDir not found after completing run ' + str(instanceNum) + ' in directory ' + str(runDirName) + '\n')
+            successBool = False
         Path('inputDir').mkdir(parents=True, exist_ok=True)
         gString = 'outputDir/*.xmi'
         gList = glob.glob(gString)
         if not gList:
+            successBool = False
             print('Warning, no XMI files detected at ' + str(gString))
             print('Hint: Double check that you have correctly set the API parameters!')
             with open(logName, 'a') as fWrite:
@@ -109,8 +139,8 @@ def parallelParse(t):
                 Path(f).unlink()
             with open(logName, 'a') as fWrite:
                 fWrite.write('Finished compressing and deleting output XMI files from timestamp ' + str(ts_string) + '\n')
-        runDirName = ''
     else:
+        successBool = False
         with open(logName, 'a') as fWrite:
             runDirError = runDirName + '.' + ts_string + '.error.tar.gz'
             fWrite.write('error when processing ' + str(instanceNum) + ' at timestamp ' + str(ts_string) + '\n')
@@ -130,9 +160,30 @@ def parallelParse(t):
     with open(logName, 'a') as fWrite:
         fWrite.write('#####\n')
     # return to parent directory to reset
-    time.sleep(2)
+    # then copy logs and output to designated directories
+    time.sleep(1)
     os.chdir(rootDir)
-    return runDirName
+    logString = runDirName + '/ctakes*.txt'
+    logList = glob.glob(logString)
+    destList_logs = [x.split('/')[-1] for x in logList]
+    destList_logs = [str(logDirName) + '/' + x for x in destList_logs]
+    logTuple = list(zip(logList, destList_logs))
+    for itm in logTuple:
+        shutil.copy(itm[0], itm[1])
+    if successBool:
+        fileListString = runDirName + '/outputDir/*.xmi.gz'
+        fileList = glob.glob(fileListString)
+        fileList_dest = [x.split('/')[-1] for x in fileList]
+        fileList_dest = [str(outName) + '/' + str(x) for x in fileList_dest]
+        fileTuple = list(zip(fileList, fileList_dest))
+        for itm in fileTuple:
+            shutil.copy(itm[0], itm[1])
+        time.sleep(1)
+        if not keepWorkDirBool:
+            shutil.rmtree(runDirName)
+        return (True, runDirName)
+    else:
+        return (False, runDirName)
 
 tupleList = []
 ct = 0
@@ -142,13 +193,13 @@ print('building list of lists of input...')
 for i in tqdm(inFileList):
     if idx > splitCount: 
         idx=0
-        tupleList.append((ct, tmpList))
+        tupleList.append((ct, tmpList, outputDirName, logDirName, keepWorkDirBool))
         ct += 1
         tmpList = []
     f = i.split('/')[-1]
     tmpList.append((i, f))
     idx += 1
-tupleList.append((ct, tmpList))
+tupleList.append((ct, tmpList, outputDirName, logDirName, keepWorkDirBool))
 
 v_ct=0
 for i in tupleList:
@@ -169,7 +220,7 @@ with Pool(processes=instanceLimit) as p:
             errList.append(j)
 
 print('Now checking for reported errors...')
-detectedErrors = [x for x in errList if x]
+detectedErrors = [x for x in errList if x[0] == False]
 if detectedErrors:
     print('WARNING! Errors were detected in the following run instances:')
     for i in detectedErrors:
@@ -177,3 +228,4 @@ if detectedErrors:
 else:
     print('No errors detected.')
 print('work complete')
+
