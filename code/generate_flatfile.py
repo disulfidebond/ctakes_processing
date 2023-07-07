@@ -25,7 +25,12 @@ parser.add_argument('--inputCSV', '-i', help="input CSV file of extracted data",
 parser.add_argument('--inputDir', '-d', help="input directory containing parsed CUI text files", required=True)
 parser.add_argument('--outputFileName', '-o', help="output file name for flatfile", required=True)
 parser.add_argument('--setCSVkey', '-k', help='value for the column of unique keys in the input CSV file', default="FileID", nargs='?', const="FileID")
+parser.add_argument('--polarityBool', '-p', choices=['True', 'False'], nargs='?', default='True', const='True', help='Boolean to indicate if the process_xmi step included a polarity value in the output. Default is True.')
 args = parser.parse_args()
+
+usePolarityBool = True
+if args.polarityBool == 'False':
+    usePolarityBool = False
 
 csvKeyBool = False
 csvKey = None
@@ -61,9 +66,13 @@ print('importing CUI files')
 for f in tqdm(fList):
     fName = f.split('.')[0]
     fName = fName.split('/')[-1]
-    # CUI,PreferredText,DomainCode,Start,End
-    df = pd.read_csv(f, header=None, names=['FileID', 'CUI','DomainCode','PreferredText','OffsetStart','OffsetStop'], sep='|')
-    dfList.append(df)
+    # CUI,PreferredText,DomainCode,Start,End,Polarity
+    if usePolarityBool:
+        df = pd.read_csv(f, header=None, names=['FileID', 'CUI','DomainCode','PreferredText','OffsetStart','OffsetStop','Polarity'], sep='|')
+        dfList.append(df)
+    else:
+        df = pd.read_csv(f, header=None, names=['FileID', 'CUI','DomainCode','PreferredText','OffsetStart','OffsetStop'], sep='|')
+        dfList.append(df)     
 if len(dfList) == 0:
     print('\nError, the script was unable to locate any CUI files\nin the directory you provided.\nPlease check that location, and ensure that\nall of the CUI files end in .txt')
     print('Exiting now.')
