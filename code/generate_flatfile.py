@@ -135,7 +135,8 @@ except KeyError:
     print('Error, column FileID not found in the inputCSV file.\nPlease make sure there is a column\nwith unique values named FileID in the inputCSV file,\nor you provide an argument for --setCSVkey')
     print('Exiting now.')
     sys.exit()
-df_final["Polarity"] = ''
+if not usePolarityBool:
+    df_final["Polarity"] = ''
 df_final = df_final[["FileID","NoteType","PatientID","EncounterID","TimeStamp","CUI","PreferredText","OffsetStart","OffsetStop","DomainCode","Polarity"]]
 df_final = df_final.copy()
 df_final.to_csv(args.outputFileName, index=False, sep='|')
