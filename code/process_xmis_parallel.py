@@ -19,7 +19,10 @@ import glob
 import time
 
 '''
-Version 1.0: Parallelized implementation of pythonic workflow that uses Cassis to generate a flatfile 
+Version 1.1: Parallelized implementation of pythonic workflow that uses Cassis to generate a flatfile 
+Updates: 
+- bugfix to suppress false positive warnings from Cas library
+- added polarity as a return value from input XMI files
 Requirements: A TypeSystem.xml file must be in the same working directory as this python script
 '''
 
@@ -132,6 +135,7 @@ def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = None, ve
     text = ident_annot.get_covered_text()
     start_offset = ident_annot['begin']
     end_offset = ident_annot['end']
+    polarity_val = ident_annot['polarity']
 
     cui_info = get_cui_coding_sceme_preferred_text(ident_annot)
     for cui, (coding_scheme, pref_text) in cui_info.items():
@@ -143,6 +147,7 @@ def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = None, ve
           str(pref_text), # sometimes None
           str(start_offset),
           str(end_offset),
+          str(polarity_val),
           text
         )
       else:
@@ -152,7 +157,8 @@ def process_xmi_file(xmi_path, type_system, out_file, excludeTextBool = None, ve
           coding_scheme.lower(),
           str(pref_text),
           str(start_offset),
-          str(end_offset)
+          str(end_offset),
+          str(polarity_val)
         )
       out_tuples.append(out_tuple)
   
@@ -179,8 +185,10 @@ def workerNode(t):
   idxInt = t[1]
   type_system = None
   type_system_path = t[2]
-  with open(type_system_path, 'rb') as fOpen:
-    type_system = load_typesystem(fOpen)
+  with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=UserWarning)
+    with open(type_system_path, 'rb') as fOpen:
+      type_system = load_typesystem(fOpen)
   excludeTextBool = t[3]
   verboseOutputBool = t[4]
   # worker node setup
