@@ -20,6 +20,7 @@ parser.add_argument('--instanceLimit', '-l', type=int, help='number of concurren
 parser.add_argument('--templateDir', '-t', type=str, help='name of the directory containing cTAKES that will be copied to each worker node', required=True)
 parser.add_argument('--outputDir', '-o', help='name of directory where output compressed XMI files will be copied to', required=True)
 parser.add_argument('--keepWorkDirs', choices=['True', 'False'], help='if set to True, output directories from each worker will be kept. Default is False', const='False', default='False', nargs='?')
+parser.add_argument('--noteSuffix', choices=['csv', 'txt'], help='note suffix for input notes, default is csv', nargs='?', const='csv', default='csv')
 args = parser.parse_args()
 
 '''
@@ -62,7 +63,8 @@ logDirName = str(outputDirName) + '_logFiles_' + ts_logs
 Path(logDirName).mkdir(parents=True, exist_ok=True)
 
 inputDir = args.inputDir
-gString = inputDir + '/*.csv'
+noteSuffix = str(args.noteSuffix)
+gString = inputDir + '/*.' + noteSuffix
 print('gathering list of all input files at ' + str(inputDir))
 inFileList = glob.glob(gString)
 if len(inFileList) == 0:
