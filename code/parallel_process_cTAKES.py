@@ -11,6 +11,8 @@ from pathlib import Path
 from multiprocessing import Pool
 import time
 import argparse
+import hashlib
+import random
 
 # setup
 parser = argparse.ArgumentParser()
@@ -95,7 +97,7 @@ def parallelParse(t):
     srcDir = os.getcwd() + '/' + str(args.templateDir)
     destDir = os.getcwd() + '/' + runDirName
     shutil.copytree(srcDir, destDir)
-    logName = 'ctakes_pyrunLog.' + ts_string + '.txt'
+    logName = 'ctakes_pyrunLog.' + str(instanceNum) + '.' + ts_string + '.txt'
     # setup: need to copy files to unique runInstance directory
     destList = [x[1] for x in t[1]]
     destList = [(str(runDirName) + '/inputDir/' + str(x)) for x in destList]
@@ -171,7 +173,11 @@ def parallelParse(t):
     destList_logs = [str(logDirName) + '/' + x for x in destList_logs]
     logTuple = list(zip(logList, destList_logs))
     for itm in logTuple:
-        shutil.copy(itm[0], itm[1])
+        dest = str(itm[1])
+        if Path(dest).exists():
+            appendString = hashlib.md5(str(random.randint(0, 10000)).encode('utf-8')).hexdigest()
+            dest = dest + '.' + appendString + '.txt'
+        shutil.copy(itm[0], dest)
     if successBool:
         fileListString = runDirName + '/outputDir/*.xmi.gz'
         fileList = glob.glob(fileListString)
