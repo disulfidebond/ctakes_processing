@@ -284,7 +284,7 @@ def main(parseMode, headerFile, debugMode, exitOnError, forceImport, inputDirect
             parsedResults = mapData(f, hFields, mmethod="xml", wdirName=wdirName, debugMode=debugMode, exitOnError=exitOnError)
             resultList.append(parsedResults)
         if previewMode:
-            print('preview of data:')
+            print('PREVIEW MODE displaying only a preview of the data. The output file will only have a single line of output.\n')
             print(resultList)
             break
     if debugMode == 'quiet':
