@@ -151,7 +151,7 @@ Additionally, a [debug version](https://git.doit.wisc.edu/smph-public/dom/uw-icu
 ## Step 2: Data Extraction
 This workflow takes as input either a directory of cTAKES output XMI files, or the input medical notes files. It uses the python script [note_data_extractor.py](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/note_data_extractor.py) to extract the Document ID, Note Type, Patient ID, Encounter ID, and Note Timestamp. The required input arguments are:
 
-* parseMode -> enter either `csv` for a medical note file, or `xmi` for an output cTAKES file. (Required)
+* parseMode -> enter either `csv` for a medical note file **with headers**, `txt` for a medical note file without headers, or `xmi` for an output cTAKES file that is gz-compressed. (Required)
 * headerFile -> this must be a text file with the 0-based column indexes for the data columns you wish to extract. It must have values for `FileName`, `DocType`, `PatID`, `EncID`, and `TS`, which are the file name, document type, patient identifier, encounter identifier, and time stamp, respectively. An example is [here](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/update1/code/example_header_file.txt), see also the Important Notes for Data Extraction subsection below. (Required)
 * debugMode -> set this to `verbose` to provide verbose output on file processing, and to disable deleting the temporary work directory at the conclusion of the workflow. The default is `quiet`.
 * exitOnError -> if set to True, then the workflow will exit if it encounters a parsing error. The default is False.
@@ -160,9 +160,24 @@ This workflow takes as input either a directory of cTAKES output XMI files, or t
 * outputFile -> the name for the output CSV file. (Required)
 * previewMode -> if set to 'True', then the workflow will parse the first note file, print the output to the screen, and then exit without creating an output file. The default is False.
 
+Example usage for an input directory of medical notes in CSV format with no headers is:
+
+    python note_data_extractor.py --parseMode txt --headerFile headerFile.txt --inputDirectory notes_without_headers --outputFile parsedData.csv
+
+Example usage for an input directory of gz-compressed XMI cTAKES output is:
+
+    python note_data_extractor.py --parseMode xml --headerFile headerFile.txt --inputDirectory ctakes_output --outputFile parsedData.csv
+
+Example usage for an input directory of medical notes in CSV format with headers is:
+
+    python note_data_extractor.py --parseMode csv --headerFile headerFile.txt --inputDirectory notes_with_headers --outputFile parsedData.csv
+
+
 #### Important Notes for Data Extraction
-* The script will accept either XMI or a medical note (CSV) file, but you can only provide one set of headers. Meaning, the header indexes for both the medical note files and XMI files must be the same, or you'll need to run the data extractor multiple times.
-* The script will automatically check the provided input files to see if they can be parsed as an XMI file, and if they can be imported as a CSV file into pandas. Although not advised, you can disable this functionality via `forceImport='True'` which will then bypass checking the files.
+* It is **strongly** recommended to first run the `note_data_extractor.py` python script in `--previewMode True` to get a preview of what the parsed output will look like.
+* If you encounter problems, running the script in `--debugMode verbose` will show warnings and other messages that will help you identify what is going wrong.
+* The script will accept either a XMI or a medical note (CSV) file, but you can only provide one set of headers. Meaning, the header indexes for both the medical note files and XMI files must be the same, or you'll need to run the data extractor multiple times.
+* If you set `--parseMode xml` or `--parseMode csv`, the script will automatically check the provided input files to see if they can be parsed as an XMI file, and if they can be imported as a CSV file into pandas. Although not advised, you can disable this functionality via `forceImport='True'` which will then bypass checking the files.
 * All of the required fields for the headerFile must be provided. If one needs to be skipped (for example, if EncounterID == PatientID), then you enter "-1" for that field, which is shown in the [example](https://git.doit.wisc.edu/smph-public/dom/uw-icu-data-science-lab-public/ctakes_processing/-/blob/main/code/example_header_file.txt).
 * The workflow will not check to see if a file name with the same name as the provided outputFile exists before overwriting it.
 
