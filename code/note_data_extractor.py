@@ -31,7 +31,7 @@ def uncompressAndCopyFile(f, wDir, debugMode='quiet'):
             with open(outPath, 'wb') as f_out:
                 shutil.copyfileobj(f_in, f_out)
                 return outPath
-    except gzip.BadGzipFile:
+    except OSError:
         if debugMode != 'quiet':
             print('Not a gzipped file or unreadable file: ' + str(f))
         return False
