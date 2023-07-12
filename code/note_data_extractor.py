@@ -39,7 +39,7 @@ def uncompressAndCopyFile(f, wDir, debugMode='quiet'):
 def checkImportAsXMI(f, wDir, debugMode='quiet'):
     if not f.endswith('.gz'):
         if debugMode != 'quiet':
-            print('\nWARNING! XMI files must be gz-compressed, or the output will be unpredictable.')
+            print('\nWARNING! XMI files must be gz-compressed,\nor output will be unpredictable.\n')
         return False
     tryUncompress = uncompressAndCopyFile(f, wDir)
     if not tryUncompress:
@@ -210,6 +210,17 @@ def importXMIFile(f, cDict, wDir, debugMode='quiet', exitOnError=False):
             break
     return parsedData
 
+def importText(f, cDict, wdirName, debugMode='quiet'):
+    df = pd.read_csv(f, header=None)
+    parsedData = []
+    for k,v in cDict.items():
+        if v == -1:
+            parsedData.append('SKIPPED')
+            continue
+        s = df.iloc[0,v]
+        parsedData.append(s)
+    return parsedData
+
 # main workflow function
 def mapData(f, cDict, mmethod="csv", wdirName=None, debugMode='quiet', exitOnError=False):
     parsedData = []
@@ -246,8 +257,11 @@ def mapData(f, cDict, mmethod="csv", wdirName=None, debugMode='quiet', exitOnErr
                 print('Unable to load file ' + str(f) + ' using pandas, attempting to load raw text.')
             parsedData = fallbackCSV(f, cDict, exitOnError=exitOnError)
             return (fName, parsedData)
-    else:
+    elif mmethod == "xml":
         parsedData = importXMIFile(f, cDict, wdirName, debugMode=debugMode)
+        return (fName, parsedData)
+    else:
+        parsedData = importText(f, cDict, wdirName, debugMode=debugMode)
         return (fName, parsedData)
 
 def main(parseMode, headerFile, debugMode, exitOnError, forceImport, inputDirectory, outputFile, previewMode):
@@ -276,7 +290,9 @@ def main(parseMode, headerFile, debugMode, exitOnError, forceImport, inputDirect
     # finally, process the files
     resultList = []
     for f in tqdm(fList):
-        importMethod = checkImportFile(f=f,
+        importMethod = "txt"
+        if parseMode != "txt":
+            importMethod = checkImportFile(f=f,
                                        importMethod=parseMode,
                                        forceImport=forceImport,
                                        headerDict=hFields,
@@ -284,6 +300,9 @@ def main(parseMode, headerFile, debugMode, exitOnError, forceImport, inputDirect
                                        debugMode=debugMode)
         if importMethod == "csv":
             parsedResults = mapData(f, hFields, mmethod="csv", wdirName=wdirName, debugMode=debugMode, exitOnError=exitOnError)
+            resultList.append(parsedResults)
+        elif importMethod == "txt":
+            parsedResults = mapData(f, hFields, mmethod="txt", wdirName=wdirName, debugMode=debugMode, exitOnError=exitOnError)
             resultList.append(parsedResults)
         else:
             parsedResults = mapData(f, hFields, mmethod="xml", wdirName=wdirName, debugMode=debugMode, exitOnError=exitOnError)
@@ -321,7 +340,7 @@ def main(parseMode, headerFile, debugMode, exitOnError, forceImport, inputDirect
 if __name__ == '__main__':
     # setup
     parser = argparse.ArgumentParser()
-    parser.add_argument('--parseMode', '-m', choices=['csv', 'xml'], help="parser mode for input XMI or note files", required=True)
+    parser.add_argument('--parseMode', '-m', choices=['csv', 'xml', 'txt'], help="parser mode for input XMI or note files", required=True)
     parser.add_argument('--headerFile', type=str, help="text file with mapping for indices in the input XMI or medical note files", required=True)
     parser.add_argument('--debugMode', '-v', choices=['verbose', 'quiet'], help="enter verbose to have verbose output and not delete temp work directories, or quiet for quiet mode", const='quiet', nargs='?', default='quiet')
     parser.add_argument('--exitOnError', choices=['True', 'False'], nargs='?', const='False', default='False', help="after setup, stop if encounter a parse error.")
