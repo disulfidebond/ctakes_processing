@@ -197,6 +197,7 @@ def importXMIFile(f, cDict, wDir, debugMode='quiet', exitOnError=False):
                     parsedData.append('SKIPPED')
                 try:
                     s = parsedList[v]
+                    s = s.rstrip('\r\n')
                     parsedData.append(s)
                 except IndexError:
                     if debugMode != 'quiet':
