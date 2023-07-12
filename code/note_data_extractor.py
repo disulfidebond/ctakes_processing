@@ -295,6 +295,7 @@ def main(parseMode, headerFile, debugMode, exitOnError, forceImport, inputDirect
         k = itm[0]
         cols = itm[1]
         result = None
+        col0 = [cols[0]]
         if cols[0] == 'SKIPPED':
             col0 = [str(k)]
         col1 = [cols[1]]
