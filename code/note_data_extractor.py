@@ -37,6 +37,9 @@ def uncompressAndCopyFile(f, wDir, debugMode='quiet'):
         return False
 
 def checkImportAsXMI(f, wDir, debugMode='quiet'):
+    if not f.endswith('.gz'):
+        print('XMI files must be gz-compressed. Output will be unpredictable.')
+        return False
     tryUncompress = uncompressAndCopyFile(f, wDir)
     if not tryUncompress:
         # print('Unable to uncompress file ' + str(f) + ', trying to import as CSV instead...')
