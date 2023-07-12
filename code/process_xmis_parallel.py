@@ -17,6 +17,7 @@ from tqdm import tqdm
 from multiprocessing import Pool
 import glob
 import time
+import warnings
 
 '''
 Version 1.1: Parallelized implementation of pythonic workflow that uses Cassis to generate a flatfile 
