@@ -211,6 +211,11 @@ def importXMIFile(f, cDict, wDir, debugMode='quiet', exitOnError=False):
     return parsedData
 
 def importText(f, cDict, wdirName, debugMode='quiet'):
+    if debugMode != 'quiet':
+        if f.endswith('.xmi'):
+            print('WARNING! The file ' + str(f) +'\nlooks like an XMI file. Output will be unpredictable')
+        if f.endswith('.gz'):
+            print('WARNING! The file ' + str(f)+'\nlooks like a gz file. If it is not in a proper CSV format the output will be unpredictable')
     df = pd.read_csv(f, header=None)
     parsedData = []
     for k,v in cDict.items():
