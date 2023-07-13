@@ -26,7 +26,13 @@ parser.add_argument('--inputDir', '-d', help="input directory containing parsed 
 parser.add_argument('--outputFileName', '-o', help="output file name for flatfile", required=True)
 parser.add_argument('--setCSVkey', '-k', help='value for the column of unique keys in the input CSV file', default="FileID", nargs='?', const="FileID")
 parser.add_argument('--polarityBool', '-p', choices=['True', 'False'], nargs='?', default='True', const='True', help='Boolean to indicate if the process_xmi step included a polarity value in the output. Default is True.')
+parser.add_argument('--runValidation', choices=['True','False'], nargs='?', default='False', const='False', help='if set to true, the workflow will run an additional validation step to check for any missing notes') 
 args = parser.parse_args()
+
+checkMissing = False
+if args.runValidation == 'True':
+    checkMissing = True
+
 
 usePolarityBool = True
 if args.polarityBool == 'False':
@@ -114,6 +120,7 @@ parsed = [x.split('.')[-1] for x in cuiList]
 parsed = list(set(parsed))
 if len(parsed) != 1:
     print('Error, different filename suffixes detected\nin CUI files. Exiting now.')
+    print(parsed)
     sys.exit()
 fSuffix = '.'+parsed[0]
 
@@ -140,4 +147,32 @@ if not usePolarityBool:
 df_final = df_final[["FileID","NoteType","PatientID","EncounterID","TimeStamp","CUI","PreferredText","OffsetStart","OffsetStop","DomainCode","Polarity"]]
 df_final = df_final.copy()
 df_final.to_csv(args.outputFileName, index=False, sep='|')
+
+if checkMissing:
+    t = datetime.now()
+    ts_string = t.strftime('%m%d%Y_%H%M%S')
+    noErrorBool = True
+    print('Now scanning for any skipped files')
+    df_cuis['X'] = 1
+    df_cuis = df_cuis.copy()
+    dataCSV['X'] = 1
+    dataCSV = dataCSV.copy()
+    df_v = pd.merge(dataCSV, df_cuis, how="outer", on="FileID")
+    df_v = df_v.fillna(0)
+    missingInDataCSV = df_v.loc[df_v['X_x'] == 0,]
+    missingInCUIs = df_v.loc[df_v['X_y'] == 0,]
+    if len(missingInDataCSV) != 0:
+        print('\nWARNING! Found notes that were present in the CUIs but missing in the dataCSV.')
+        fout1 = 'missing_in_DataCSV.' + ts_string + '.csv'
+        missingInDataCSV.to_csv(fout1, index=False)
+        print('created output file that lists these named ' + str(fout1)+'\n')
+        noErrorBool = False
+    if len(missingInCUIs) != 0:
+       	print('\nWARNING! Found notes that were present in the dataCSV but missing in the CUIs.')
+       	fout2 =	'missing_in_CUIs.' + ts_string + '.csv'
+       	missingInDataCSV.to_csv(fout2, index=False)
+       	print('created output file that lists these named ' + str(fout2)+'\n')
+        noErrorBool = False
+    if noErrorBool:
+        print('No missing files detected.')
 print('job done')
