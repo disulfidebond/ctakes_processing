@@ -64,7 +64,7 @@ else:
     print('Unable to locate the provided input CSV ' + str(args.inputCSV) + ', please check the spelling and PATH and try again.')
     sys.exit()
 
-# import CUIs as list then concatenate
+# import CUIs as list then concatenate files
 dfList = []
 gPath = str(inputDir + '/*.txt')
 fList = glob.glob(gPath)
