@@ -25,6 +25,8 @@ parser.add_argument('--keepWorkDirs', choices=['True', 'False'], help='if set to
 parser.add_argument('--noteSuffix', choices=['csv', 'txt'], help='note suffix for input notes, default is csv', nargs='?', const='csv', default='csv')
 args = parser.parse_args()
 
+# modification: add additional check to script after cTAKES finishes
+
 '''
 Requirements:
 1. Modify the runCTAKES.sh script as described in the documentation, then add it to the cTAKES template directory
@@ -55,9 +57,8 @@ if not Path(args.outputDir).exists():
 else:
     tstamp = datetime.now()
     ts_string = tstamp.strftime('%m%d%Y_%H%M%S')
-    # Path('inputDir').mkdir(parents=True, exist_ok=True)
     print('Error, the provided output directory name exists.\nAppending a timestamp to the provided directory name to prevent overwriting.')
-    outputDirName = str(args.outputDir) + ts_string
+    outputDirName = str(args.outputDir) + '_' + ts_string
 tstamp = datetime.now()
 ts_logs = tstamp.strftime('%m%d%Y_%H%M%S')
 Path(outputDirName).mkdir(parents=True, exist_ok=True)    
@@ -116,7 +117,31 @@ def parallelParse(t):
     # finished setup, ready to run cTAKES
     runDirCommand = ['./runCTAKES.sh']
     ctakesRun = subprocess.run(runDirCommand, shell=True, stdout=subprocess.PIPE)
-    if ctakesRun.returncode == 0:
+    checkedOutput = glob.glob('outputDir/*.xmi')
+    checkedOutput = [os.path.basename(x) for x in checkedOutput]
+    validationList = [os.path.basename(x) for x in srcList]
+    validationList = [str(x)+'.xmi' for x in validationList]
+    validationList.sort()
+    checkedOutput.sort()
+    if validationList != checkedOutput:
+        successBool = False
+        with open(logName, 'a') as fWrite:
+            runDirError = runDirName + '.' + ts_string + '.error.tar.gz'
+            fWrite.write('cTAKES error when processing ' + str(instanceNum) + ' at timestamp ' + str(ts_string) + '\n')
+            fWrite.write('compressing IO directories of ' + str(runDirError) + ' with timestamp ' + str(ts_string) + '\n')
+        renamedDir_input = 'inputDir_' + ts_string
+        renamedDir_output = 'outputDir_' + ts_string
+        os.rename('inputDir', renamedDir_input)
+        time.sleep(2)
+        os.rename('outputDir', renamedDir_output)
+        time.sleep(2)
+        make_tarfile(renamedDir_input+'error.tar.gz', renamedDir_input)
+        make_tarfile(renamedDir_output+'error.tar.gz', renamedDir_output)
+        Path('inputDir').mkdir(parents=True, exist_ok=True)
+        time.sleep(2)
+        Path('outputDir').mkdir(parents=True, exist_ok=True)
+        time.sleep(2)
+    elif ctakesRun.returncode == 0:
         with open(logName, 'a') as fWrite:
             fWrite.write('finished processing ' + str(instanceNum) + ' at timestamp ' + str(ts_string) + '\n')
         try:
